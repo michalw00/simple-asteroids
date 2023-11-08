@@ -4,8 +4,8 @@ import static org.lwjgl.opengl.GL11.*;
 public class Ship extends Entity {
 	public int radius;
 	private float velocityX, velocityY, acceleration;
-	private final float maxAcceleration, maxSpeed, friction;
 	public float rotation;
+	private final float maxAcceleration, maxSpeed, friction;
 	public ArrayList<Projectile> projectiles;
 
 	public Ship() {
@@ -49,6 +49,16 @@ public class Ship extends Entity {
 		}
 
 		move(velocityX, velocityY);
+	}
+
+	public void respawn() {
+		Main.lives--;
+		rotation = 0;
+		centreX = (float) (Main.WINDOW_WIDTH / 2);
+		centreY = (float) (Main.WINDOW_HEIGHT / 2);
+		velocityX = 0;
+		velocityY = 0;
+		acceleration = 0;
 	}
 
 	@Override

@@ -22,7 +22,9 @@ class Main {
 
 	public static Ship ship;
 	public static ArrayList<Asteroid> asteroids;
-	public static int score = 0; // 10*asteroid.radius per asteroid
+	public static int score = 0; // 10*asteroid.radius per asteroid, live lost penalty = -300
+	public static int lives = 3;
+	public static boolean spawnProtection = false;
 
 
 	Main() {
@@ -45,6 +47,8 @@ class Main {
 		ship = new Ship();
 		asteroids = new ArrayList<>();
 		float accumulator = 0.0f;
+		float accumulatorSpawnProtection = 0.0f;
+		float accumulatorSpawnProtectionInner = 0.0f;
 
 		while (!glfwWindowShouldClose(window)) {
 			System.out.println("Score = "+score); // todo: add proper text score counter within the window
@@ -88,7 +92,24 @@ class Main {
 			}
 
 			controller();
-			ship.draw();
+
+			if (!spawnProtection) {
+				ship.draw();
+				accumulatorSpawnProtection = 0;
+			} else {
+				accumulatorSpawnProtection += deltaTime;
+				accumulatorSpawnProtectionInner += deltaTime;
+				if (accumulatorSpawnProtection > 0.1f) {
+					ship.draw();
+					accumulatorSpawnProtection = 0.0f;
+				}
+				if (accumulatorSpawnProtectionInner > 5.0f) {
+					spawnProtection = false;
+					accumulatorSpawnProtection = 0;
+					accumulatorSpawnProtectionInner = 0;
+				}
+			}
+
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
