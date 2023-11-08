@@ -2,8 +2,9 @@ import java.util.ArrayList;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Ship extends Entity {
-	private float velocityX, velocityY, acceleration, maxAcceleration, maxSpeed, friction, respawnProtection;
 	public int radius;
+	private float velocityX, velocityY, acceleration;
+	private final float maxAcceleration, maxSpeed, friction;
 	public float rotation;
 	ArrayList<Projectile> projectiles;
 
@@ -39,7 +40,6 @@ public class Ship extends Entity {
 	private void updateVelocity() {
 		velocityX += acceleration * Math.sin(rotation * Math.PI / 180) * Main.deltaTime;
 		velocityY += acceleration * Math.cos(rotation * Math.PI / 180) * Main.deltaTime;
-		//System.out.println("velocityX="+velocityX+" velocityY="+velocityY);
 
 		float speed = MathUtils.calculateVectorLength(velocityX, velocityY);
 		if (speed > maxSpeed) {
@@ -49,58 +49,6 @@ public class Ship extends Entity {
 		}
 
 		move(velocityX, velocityY);
-	}
-
-	void spawnAt(int startingPosition) {
-		int positionRandomness;
-		switch (startingPosition) {
-			case 0: // If ship crashed into asteroid.
-				centreX = Main.WINDOW_WIDTH/2.0f;
-				centreY = Main.WINDOW_HEIGHT/2.0f+100.0f;
-			case 1: // This one starts at upper left corner, and latter positions move clockwise.
-				positionRandomness = MathUtils.randomNumber(0, (int) (Main.WINDOW_WIDTH/2.0f));
-				centreX = positionRandomness;
-				centreY = -Main.WINDOW_HEIGHT;
-				break;
-			case 2:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_WIDTH/4.0f), (int) (Main.WINDOW_WIDTH/4.0f));
-				centreX = Main.WINDOW_WIDTH/2.0f + positionRandomness;
-				centreY = -Main.WINDOW_HEIGHT;
-				break;
-			case 3:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_WIDTH/2.0f), 0);
-				centreX = Main.WINDOW_WIDTH + positionRandomness;
-				centreY = -Main.WINDOW_HEIGHT;
-				break;
-			case 4:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_HEIGHT/2.0f), (int) (Main.WINDOW_HEIGHT / 2.0f));
-				centreX = Main.WINDOW_WIDTH;
-				centreY = -Main.WINDOW_HEIGHT/2.0f + positionRandomness;
-				break;
-			case 5:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_WIDTH/2.0f), 0);
-				centreX = Main.WINDOW_WIDTH + positionRandomness;
-				centreY = Main.WINDOW_HEIGHT;
-				break;
-			case 6:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_WIDTH/4.0f), (int) (Main.WINDOW_WIDTH/4.0f));
-				centreX = Main.WINDOW_WIDTH/2.0f + positionRandomness;
-				centreY = Main.WINDOW_HEIGHT;
-				break;
-			case 7:
-				positionRandomness = MathUtils.randomNumber(0, (int) (Main.WINDOW_WIDTH/2.0f));
-				centreX = positionRandomness;
-				centreY = Main.WINDOW_HEIGHT;
-				break;
-			case 8:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_HEIGHT/2.0f), (int) (Main.WINDOW_HEIGHT/2.0f));
-				centreX = positionRandomness;
-				centreY = -Main.WINDOW_HEIGHT/2.0f;
-				break;
-			default:
-				System.err.println("This should not have happened.");
-				System.exit(1);
-		}
 	}
 
 	@Override
@@ -130,7 +78,7 @@ public class Ship extends Entity {
 		lineLength = Math.min(lineLength, 10);
 		glVertex2f(0, lineLength);
 		glEnd();
-		glColor3f(1.0f, 1.0f, 1.0f); // Restore white color
+		glColor3f(1.0f, 1.0f, 1.0f);
 
 		glPopMatrix();
 	}

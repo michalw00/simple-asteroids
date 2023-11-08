@@ -2,7 +2,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.ListIterator;
+
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -16,6 +17,8 @@ class Main {
 
 	static final int MIN_RADIUS = 40, MAX_RADIUS = 65;
 	static final int MIN_SEGMENTS = 5, MAX_SEGMENTS = 9;
+	static final int ASTEROID_SPAWN_RADIUS = 500, ASTEROID_SPEED = 200;
+	static final float ASTEROID_SPAWN_DELAY = 0.2f;
 	static Ship ship;
 	static ArrayList<Asteroid> asteroids = new ArrayList<>();
 	static int score = 0; // 10*asteroid.radius per asteroid
@@ -39,45 +42,50 @@ class Main {
 	private void loop() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		ship = new Ship();
-		double frameCounter = 0;
 		float accumulator = 0.0f;
 
 		while (!glfwWindowShouldClose(window)) {
 			double time = glfwGetTime();
 			float minStep = 1.0f;
-			deltaTime = Math.min((float)(time - previousTime),minStep);
+			deltaTime = Math.min((float) (time - previousTime), minStep);
 			previousTime = time;
-			System.out.printf("%.0f FPS%n", 1.0 / deltaTime);
 
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			accumulator += deltaTime;
-			if (accumulator >= 5.0f) {
+			if (accumulator >= ASTEROID_SPAWN_DELAY) {
 				asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS), MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
 				accumulator = 0;
 			}
 
-			Iterator<Asteroid> iterator = asteroids.iterator();
+			ListIterator<Asteroid> iterator = asteroids.listIterator();
 			while (iterator.hasNext()) {
 				Asteroid asteroid = iterator.next();
 				asteroid.draw();
-				asteroid.move(9f, 9f);
+				asteroid.move(10.0f, 10.0f);
 				if (asteroid.collision()) {
+					float tempX = asteroid.centreX;
+					float tempY = asteroid.centreY;
+					float tempRadius = asteroid.radius;
 					iterator.remove();
-					//spawn small asteroids
+					if (tempRadius > MIN_RADIUS) {
+						for (int i = 0; i < 4; i++) {
+							int spawnAngle = MathUtils.randomNumber(1, 360);
+							float x = (float) (tempX + tempRadius * Math.cos(spawnAngle));
+							float y = (float) (tempY + tempRadius * Math.sin(spawnAngle));
+							iterator.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS), MathUtils.randomNumber(MIN_RADIUS/2, MAX_RADIUS/2), x, y, spawnAngle));
+						}
+					}
 				}
 			}
 
-			Iterator<Projectile> iterator2 = ship.projectiles.iterator();
-			while (iterator2.hasNext()) {
-				Projectile projectile = iterator2.next();
+			for (Projectile projectile : ship.projectiles) {
 				projectile.calculateVelocity();
 				projectile.draw();
 			}
 
 			controller();
 			ship.draw();
-
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}

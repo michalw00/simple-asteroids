@@ -4,88 +4,56 @@ import java.util.Random;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Asteroid extends Entity {
-	private int numSegments, startingPosition, seed, positionRandomness, speedModifier;
+	private final int numSegments, seed, speedModifier;
 	public int radius;
+	private final float initialX, initialY;
+	private final double spawnAngle;
+
 
 	public Asteroid(int numSegments, int radius) {
 		this.numSegments = numSegments;
 		this.radius = radius;
 		seed = (int) (Math.random() * 50);
-		speedModifier = (int)(1.0f - Math.pow(radius / Main.MAX_RADIUS*2, 2.0)) * 10;
+		speedModifier = (int) ((1.0f - Math.pow((float)radius / Main.MAX_RADIUS * 2, 2.0)) * Main.ASTEROID_SPEED);
 
-		this.startingPosition = (int) (1 + (Math.random() * (9 - 1)));
-		spawnAt(startingPosition);
+		spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
+		initialX = (float) (Main.WINDOW_WIDTH/2 + Main.ASTEROID_SPAWN_RADIUS * Math.cos(spawnAngle));
+		initialY = (float) (Main.WINDOW_WIDTH/2 - Main.ASTEROID_SPAWN_RADIUS * Math.sin(spawnAngle));
+		this.centreX = initialX;
+		this.centreY = initialY;
 		draw();
-
 	}
 
-	void spawnAt(int startingPosition) {
-		switch (startingPosition) {
-			case 1: // This one starts at upper left corner, and latter positions move clockwise.
-				positionRandomness = MathUtils.randomNumber(0, (int) (Main.WINDOW_WIDTH/2.0f));
-				centreX = positionRandomness;
-				centreY = -Main.WINDOW_HEIGHT;
-				break;
-			case 2:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_WIDTH/4.0f), (int) (Main.WINDOW_WIDTH/4.0f));
-				centreX = Main.WINDOW_WIDTH/2.0f + positionRandomness;
-				centreY = -Main.WINDOW_HEIGHT;
-				break;
-			case 3:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_WIDTH/2.0f), 0);
-				centreX = Main.WINDOW_WIDTH + positionRandomness;
-				centreY = -Main.WINDOW_HEIGHT;
-				break;
-			case 4:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_HEIGHT/2.0f), (int) (Main.WINDOW_HEIGHT / 2.0f));
-				centreX = Main.WINDOW_WIDTH;
-				centreY = -Main.WINDOW_HEIGHT/2.0f + positionRandomness;
-				break;
-			case 5:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_WIDTH/2.0f), 0);
-				centreX = Main.WINDOW_WIDTH + positionRandomness;
-				centreY = Main.WINDOW_HEIGHT;
-				break;
-			case 6:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_WIDTH/4.0f), (int) (Main.WINDOW_WIDTH/4.0f));
-				centreX = Main.WINDOW_WIDTH/2.0f + positionRandomness;
-				centreY = Main.WINDOW_HEIGHT;
-				break;
-			case 7:
-				positionRandomness = MathUtils.randomNumber(0, (int) (Main.WINDOW_WIDTH/2.0f));
-				centreX = positionRandomness;
-				centreY = Main.WINDOW_HEIGHT;
-				break;
-			case 8:
-				positionRandomness = MathUtils.randomNumber((int) (-Main.WINDOW_HEIGHT/2.0f), (int) (Main.WINDOW_HEIGHT/2.0f));
-				centreX = positionRandomness;
-				centreY = -Main.WINDOW_HEIGHT/2.0f;
-				break;
-			default:
-				System.err.println("This should not have happened.");
-				System.exit(1);
-		}
+	public Asteroid(int numSegments, int radius, float initialX, float initialY, double spawnAngle) {
+		this.numSegments = numSegments;
+		this.radius = radius;
+		seed = (int) (Math.random() * 50);
+		speedModifier = (int) ((1.0f - Math.pow((float)radius / Main.MAX_RADIUS * 2, 2.0)) * Main.ASTEROID_SPEED);
+
+		this.spawnAngle = Math.toRadians(spawnAngle);
+		this.initialX = initialX;
+		this.initialY = initialY;
+		this.centreX = initialX;
+		this.centreY = initialY;
+		draw();
 	}
 
 	boolean collision() {
 		int distance = MathUtils.calculateDistance((int)Main.ship.centreX, (int)Main.ship.centreY, (int)centreX, (int)centreY);
 		if (distance < Main.ship.radius + (radius - 10)) { // if ship collides with asteroid
-			System.out.println("Collision"); // todo: just temp, needs ship gets destroyed logic
+			// todo: needs ship gets destroyed logic, asteroid should remain untouched
 		}
 
 		if (Math.abs(centreX) > Main.WINDOW_WIDTH || Math.abs(centreY) > Main.WINDOW_HEIGHT) { // if asteroid hits the border
-			System.out.println("Asteroid out of border!"); // todo: borders don't align with window fully in some places, try to fix
-			startingPosition = MathUtils.randomNumber(1, 8);
-			spawnAt(startingPosition);
+			// todo: need to add spawn protection first, so I can spawn asteroids out of border
 		}
 
 		Iterator<Projectile> iterator = Main.ship.projectiles.iterator();
 		while (iterator.hasNext()) {
 			Projectile projectile = iterator.next();
 			int distance1 = MathUtils.calculateDistance((int)projectile.centreX, (int)projectile.centreY, (int)centreX, (int)centreY);
-			if (distance1 < 1 + radius) { // if projectile hits asteroid
+			if (distance1 < 1 + radius) {
 				iterator.remove();
-				// todo: spawn smaller, faster asteroids
 				return true;
 			}
 		}
@@ -94,41 +62,17 @@ public class Asteroid extends Entity {
 
 	@Override
 	void move(float moveX, float moveY) {
-		moveX *= speedModifier * Main.deltaTime;
-		moveY *= speedModifier * Main.deltaTime;
-		switch (startingPosition) {
-			case 1: // Upper left corner
-				centreX += moveX;
-				centreY += moveY;
-				break;
-			case 2: // Upper middle
-				centreY += moveY;
-				break;
-			case 3: // Upper right corner
-				centreX -= moveX;
-				centreY += moveY;
-				break;
-			case 4: // Middle right
-				centreX -= moveX;
-				break;
-			case 5: // Lower right corner
-				centreX -= moveX;
-				centreY -= moveY;
-				break;
-			case 6: // Lower middle
-				centreY -= moveY;
-				break;
-			case 7: // Lower left corner
-				centreX += moveX;
-				centreY -= moveY;
-				break;
-			case 8: // Middle left
-				centreX += moveX;
-				break;
-			default:
-				System.err.println("This should not have happened.");
-				System.exit(1);
-		}
+		float directionX = (float) (Main.WINDOW_WIDTH/2 + Main.ASTEROID_SPAWN_RADIUS * Math.cos((spawnAngle + 180) % 360)) - centreX;
+		float directionY = (float) (Main.WINDOW_WIDTH/2 - Main.ASTEROID_SPAWN_RADIUS * Math.sin((spawnAngle + 180) % 360)) - centreY;
+
+		float length = (float) Math.sqrt(directionX * directionX + directionY * directionY);
+		directionX /= length;
+		directionY /= length;
+
+		float speedModifiedX = speedModifier * Main.deltaTime * directionX;
+		float speedModifiedY = speedModifier * Main.deltaTime * directionY;
+		centreX += speedModifiedX;
+		centreY -= speedModifiedY;
 	}
 
 	@Override
@@ -145,7 +89,7 @@ public class Asteroid extends Entity {
 			float displacement = randomSeries.nextFloat() * maxDisplacement;
 			float x = (float) (Math.cos(angle) * (radius - displacement));
 			float y = (float) (Math.sin(angle) * (radius - displacement));
-			glVertex2f(centreX + x, centreY + y); // todo: moglbym trzymac zmienne x i y w array'u, zamiast robic te obliczenia za kazdym razem
+			glVertex2f(centreX + x, centreY + y); // todo: store x and y in an array; this doesn't have to be calculated everytime
 		}
 
 		glEnd();

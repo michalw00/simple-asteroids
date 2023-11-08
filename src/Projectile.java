@@ -2,14 +2,11 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glColor3f;
 
 public class Projectile extends Entity {
-	private int projectileSpeed = 450;
 	float finalVelocityX;
 	float finalVelocityY;
 	float originRotation;
-	private Ship sourceShip;
 
 	public Projectile(Ship sourceShip) {
-		this.sourceShip = sourceShip;
 		centreX = sourceShip.centreX;
 		centreY = sourceShip.centreY;
 		originRotation = sourceShip.rotation;
@@ -17,8 +14,9 @@ public class Projectile extends Entity {
 	}
 
 	void calculateVelocity() {
-		float velocityX =(float) Math.sin(Math.toRadians(originRotation));
+		float velocityX = (float) Math.sin(Math.toRadians(originRotation));
 		float velocityY = (float) Math.cos(Math.toRadians(originRotation));
+		int projectileSpeed = 450;
 		finalVelocityX = velocityX * projectileSpeed;
 		finalVelocityY = velocityY * projectileSpeed;
 		move(finalVelocityX, finalVelocityY);
@@ -35,14 +33,14 @@ public class Projectile extends Entity {
 		glPushMatrix();
 		glTranslatef(centreX, centreY, 0.0f);
 
-		glColor3f(1.0f, 1.0f, 0.0f); // Set color to yellow
-		glBegin(GL_QUADS); // Use GL_QUADS to draw a small rectangle
+		glColor3f(1.0f, 1.0f, 0.0f);
+		glBegin(GL_QUADS);
 		glVertex2f(-1.0f, -1.0f); // Bottom-left vertex
 		glVertex2f(1.0f, -1.0f);  // Bottom-right vertex
 		glVertex2f(1.0f, 1.0f);   // Top-right vertex
 		glVertex2f(-1.0f, 1.0f);  // Top-left vertex
 		glEnd();
-		glColor3f(1.0f, 1.0f, 1.0f); // Restore white color.
+		glColor3f(1.0f, 1.0f, 1.0f);
 
 		glPopMatrix();
 	}
