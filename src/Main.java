@@ -34,7 +34,7 @@ class Main {
 		if (window == NULL) throw new RuntimeException("Failed to create the GLFW window.");
 		GLFW.glfwMakeContextCurrent(window);
 		GL.createCapabilities();
-		glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glLoadIdentity();
 		glOrtho(0,WINDOW_WIDTH,WINDOW_HEIGHT,0,0,1.0);
 	}
