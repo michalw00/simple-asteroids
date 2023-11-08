@@ -52,7 +52,8 @@ public class Asteroid extends Entity {
 		while (iterator.hasNext()) {
 			Projectile projectile = iterator.next();
 			int distance1 = MathUtils.calculateDistance((int)projectile.centreX, (int)projectile.centreY, (int)centreX, (int)centreY);
-			if (distance1 < 1 + radius) {
+			if (distance1 < 1 + radius) { // if projectile hits asteroid
+				Main.score += 1000 / radius;
 				iterator.remove();
 				return true;
 			}
@@ -65,7 +66,7 @@ public class Asteroid extends Entity {
 		float directionX = (float) (Main.WINDOW_WIDTH/2 + Main.ASTEROID_SPAWN_RADIUS * Math.cos((spawnAngle + 180) % 360)) - centreX;
 		float directionY = (float) (Main.WINDOW_WIDTH/2 - Main.ASTEROID_SPAWN_RADIUS * Math.sin((spawnAngle + 180) % 360)) - centreY;
 
-		float length = (float) Math.sqrt(directionX * directionX + directionY * directionY);
+		float length = MathUtils.calculateVectorLength(directionX, directionY);
 		directionX /= length;
 		directionY /= length;
 

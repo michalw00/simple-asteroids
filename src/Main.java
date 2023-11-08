@@ -19,9 +19,10 @@ class Main {
 	static final int MIN_SEGMENTS = 5, MAX_SEGMENTS = 9;
 	static final int ASTEROID_SPAWN_RADIUS = 500, ASTEROID_SPEED = 200;
 	static final float ASTEROID_SPAWN_DELAY = 0.2f;
-	static Ship ship;
-	static ArrayList<Asteroid> asteroids = new ArrayList<>();
-	static int score = 0; // 10*asteroid.radius per asteroid
+
+	public static Ship ship;
+	public static ArrayList<Asteroid> asteroids;
+	public static int score = 0; // 10*asteroid.radius per asteroid
 
 
 	Main() {
@@ -42,9 +43,11 @@ class Main {
 	private void loop() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		ship = new Ship();
+		asteroids = new ArrayList<>();
 		float accumulator = 0.0f;
 
 		while (!glfwWindowShouldClose(window)) {
+			System.out.println("Score = "+score); // todo: add proper text score counter within the window
 			double time = glfwGetTime();
 			float minStep = 1.0f;
 			deltaTime = Math.min((float) (time - previousTime), minStep);
@@ -100,28 +103,22 @@ class Main {
 		int keyStateSpace = glfwGetKey(window, GLFW_KEY_SPACE);
 		if (keyStateA == GLFW_PRESS) {
 			ship.rotate(-150f);
-			// Key 'A' is pressed
 		}
 		if (keyStateD == GLFW_PRESS) {
 			ship.rotate(150f);
-			// Key 'D' is pressed
 		}
 		if (keyStateW == GLFW_PRESS) {
-			ship.updateAcceleration(800.0f, true);
-			// Key 'W' is pressed
+			ship.updateAcceleration(6.0f, true);
 		}
 		if (keyStateW == GLFW_RELEASE) {
 			ship.updateAcceleration(0, false);
-			// Key 'W' is released
 		}
 		if (keyStateSpace == GLFW_PRESS && !spacePressed) {
 			ship.projectiles.add(new Projectile(ship));
 			spacePressed = true;
-			// Key 'Space' is pressed
 		}
 		if (keyStateSpace == GLFW_RELEASE) {
 			spacePressed = false;
-			// Key 'Space' is released
 		}
 	}
 

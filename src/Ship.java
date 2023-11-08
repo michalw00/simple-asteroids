@@ -6,14 +6,14 @@ public class Ship extends Entity {
 	private float velocityX, velocityY, acceleration;
 	private final float maxAcceleration, maxSpeed, friction;
 	public float rotation;
-	ArrayList<Projectile> projectiles;
+	public ArrayList<Projectile> projectiles;
 
 	public Ship() {
 		projectiles = new ArrayList<>();
 		rotation = 0;
 		maxAcceleration = 100.0f;
 		maxSpeed = 200.0f;
-		friction = 0.1f;
+		friction = 0.4f;
 		radius = 1;
 		centreX = Main.WINDOW_WIDTH/2.0f;
 		centreY = Main.WINDOW_HEIGHT/2.0f+100.0f;
