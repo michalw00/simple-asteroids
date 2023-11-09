@@ -17,7 +17,8 @@ class Main {
 
 	static final int MIN_RADIUS = 40, MAX_RADIUS = 65;
 	static final int MIN_SEGMENTS = 5, MAX_SEGMENTS = 9;
-	static final int ASTEROID_SPAWN_RADIUS = 500, ASTEROID_SPEED = 200;
+	static final int ASTEROID_SPAWN_RADIUS = 500, ASTEROID_SPEED = 100;
+	static int ASTEROID_AMOUNT_LOWER_LIMIT = 1, ASTEROID_AMOUNT_UPPER_LIMIT = 5;
 	static final float ASTEROID_SPAWN_DELAY = 0.2f;
 
 	public static Ship ship;
@@ -61,7 +62,8 @@ class Main {
 
 			accumulator += deltaTime;
 			if (accumulator >= ASTEROID_SPAWN_DELAY) {
-				asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS), MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
+				asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
+						MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
 				accumulator = 0;
 			}
 
@@ -69,7 +71,7 @@ class Main {
 			while (iterator.hasNext()) {
 				Asteroid asteroid = iterator.next();
 				asteroid.draw();
-				asteroid.move(10.0f, 10.0f);
+				asteroid.move(100.0f, 100.0f);
 				if (asteroid.collision()) {
 					float tempX = asteroid.centreX;
 					float tempY = asteroid.centreY;
@@ -80,7 +82,8 @@ class Main {
 							int spawnAngle = MathUtils.randomNumber(1, 360);
 							float x = (float) (tempX + tempRadius * Math.cos(spawnAngle));
 							float y = (float) (tempY + tempRadius * Math.sin(spawnAngle));
-							iterator.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS), MathUtils.randomNumber(MIN_RADIUS/2, MAX_RADIUS/2), x, y, spawnAngle));
+							iterator.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
+									MathUtils.randomNumber(MIN_RADIUS / 2, MAX_RADIUS / 2), x, y, spawnAngle));
 						}
 					}
 				}
