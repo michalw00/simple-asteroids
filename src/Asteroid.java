@@ -7,14 +7,19 @@ public class Asteroid extends Entity {
 	private final int numSegments, seed, speedModifier;
 	public int radius;
 	private final float initialX, initialY;
+	private float rotation;
 	private final double spawnAngle;
 
 
 	public Asteroid(int numSegments, int radius) {
 		this.numSegments = numSegments;
 		this.radius = radius;
+		rotation = 0;
 		seed = (int) (Math.random() * 50);
-		speedModifier = (int) ((1.0f - Math.pow((float)radius / Main.MAX_RADIUS * 2, 2.0)) * Main.ASTEROID_SPEED);
+
+		if (radius < 20) {
+			speedModifier = Main.ASTEROID_SPEED * 9;
+		} else speedModifier = Main.ASTEROID_SPEED;
 
 		spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
 		initialX = (float) (Main.WINDOW_WIDTH/2 + Main.ASTEROID_SPAWN_RADIUS * Math.cos(spawnAngle));
@@ -27,8 +32,12 @@ public class Asteroid extends Entity {
 	public Asteroid(int numSegments, int radius, float initialX, float initialY, double spawnAngle) {
 		this.numSegments = numSegments;
 		this.radius = radius;
+		rotation = 0;
 		seed = (int) (Math.random() * 50);
-		speedModifier = (int) ((1.0f - Math.pow((float)radius / Main.MAX_RADIUS * 2, 2.0)) * Main.ASTEROID_SPEED);
+
+		if (radius < 20) {
+			speedModifier = Main.ASTEROID_SPEED * 9;
+		} else speedModifier = Main.ASTEROID_SPEED;
 
 		this.spawnAngle = Math.toRadians(spawnAngle);
 		this.initialX = initialX;
@@ -65,6 +74,7 @@ public class Asteroid extends Entity {
 
 	@Override
 	void move(float moveX, float moveY) {
+		rotation = rotation + speedModifier * Main.deltaTime;
 		float directionX = (float) (Math.sin(spawnAngle));
 		float directionY = -(float) (Math.cos(spawnAngle));
 		directionY = -directionY;
@@ -78,6 +88,8 @@ public class Asteroid extends Entity {
 	@Override
 	public void draw() {
 		glPushMatrix();
+		glTranslatef(centreX, centreY, 0.0f);
+		glRotatef(rotation, 0, 0, 1.0f);
 		glBegin(GL_LINE_LOOP);
 
 		Random randomSeries = new Random();
@@ -89,7 +101,7 @@ public class Asteroid extends Entity {
 			float displacement = randomSeries.nextFloat() * maxDisplacement;
 			float x = (float) (Math.cos(angle) * (radius - displacement));
 			float y = (float) (Math.sin(angle) * (radius - displacement));
-			glVertex2f(centreX + x, centreY + y); // todo: store x and y in an array; this doesn't have to be calculated everytime
+			glVertex2f(x, y); // todo: store x and y in an array; this doesn't have to be calculated everytime
 		}
 
 		glEnd();
