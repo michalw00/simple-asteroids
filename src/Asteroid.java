@@ -65,17 +65,14 @@ public class Asteroid extends Entity {
 
 	@Override
 	void move(float moveX, float moveY) {
-		float directionX = (float) (Main.WINDOW_WIDTH/2 + Main.ASTEROID_SPAWN_RADIUS * Math.cos((spawnAngle + 180) % 360)) - centreX;
-		float directionY = (float) (Main.WINDOW_WIDTH/2 - Main.ASTEROID_SPAWN_RADIUS * Math.sin((spawnAngle + 180) % 360)) - centreY;
-
-		float length = MathUtils.calculateVectorLength(directionX, directionY);
-		directionX /= length;
-		directionY /= length;
-
+		float directionX = (float) (Math.sin(spawnAngle));
+		float directionY = -(float) (Math.cos(spawnAngle));
+		directionY = -directionY;
+		directionX = -directionX;
 		float speedModifiedX = speedModifier * Main.deltaTime * directionX;
 		float speedModifiedY = speedModifier * Main.deltaTime * directionY;
 		centreX += speedModifiedX;
-		centreY -= speedModifiedY;
+		centreY += speedModifiedY;
 	}
 
 	@Override
