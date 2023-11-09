@@ -46,7 +46,7 @@ class Main {
 	private void loop() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		ship = new Ship();
-		asteroids = new ArrayList<>();
+		initializeAsteroids(6);
 		float accumulator = 0.0f;
 		float accumulatorSpawnProtection = 0.0f;
 		float accumulatorSpawnProtectionInner = 0.0f;
@@ -61,17 +61,19 @@ class Main {
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			accumulator += deltaTime;
-			if (accumulator >= ASTEROID_SPAWN_DELAY) {
+			if (accumulator >= ASTEROID_SPAWN_DELAY && asteroids.size() <= ASTEROID_AMOUNT_LOWER_LIMIT) {
 				asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
 						MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
+				ASTEROID_AMOUNT_LOWER_LIMIT++;
 				accumulator = 0;
 			}
 
 			ListIterator<Asteroid> iterator = asteroids.listIterator();
 			while (iterator.hasNext()) {
 				Asteroid asteroid = iterator.next();
+				asteroid.outOfBorderCheck();
 				asteroid.draw();
-				asteroid.move(100.0f, 100.0f);
+				asteroid.move(100.0f, 100.0f); // todo: moveX and moveY are useless
 				if (asteroid.collision()) {
 					float tempX = asteroid.centreX;
 					float tempY = asteroid.centreY;
@@ -89,13 +91,16 @@ class Main {
 				}
 			}
 
-			for (Projectile projectile : ship.projectiles) {
+			ListIterator<Projectile> projectileListIterator = ship.projectiles.listIterator();
+			while (projectileListIterator.hasNext()) {
+				Projectile projectile = projectileListIterator.next();
 				projectile.calculateVelocity();
+				if (projectile.outOfBorderCheck()) projectileListIterator.remove();
 				projectile.draw();
 			}
 
 			controller();
-
+			ship.outOfBorderCheck();
 			if (!spawnProtection) {
 				ship.draw();
 				accumulatorSpawnProtection = 0;
@@ -113,11 +118,34 @@ class Main {
 				}
 			}
 
+			drawPlayableAreaBorders();
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
 
 		glfwTerminate();
+	}
+
+	private void drawPlayableAreaBorders() {
+		glPushMatrix();
+
+		glBegin(GL_LINE_LOOP);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glVertex2f(WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 5 / 100);  // Top-left corner
+		glVertex2f(WINDOW_WIDTH - WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 5 / 100);  // Top-right corner
+		glVertex2f(WINDOW_WIDTH - WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 95/100);  // Bottom-right corner
+		glVertex2f(WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 95/100);  // Bottom-left corner
+		glEnd();
+
+		glPopMatrix();
+	}
+
+	private void initializeAsteroids(int amount) {
+		asteroids = new ArrayList<>();
+		for (int i = 0; i < amount; i++) {
+			asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
+					MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
+		}
 	}
 
 	private void controller() {

@@ -20,6 +20,14 @@ public class Projectile extends Entity {
 		move(finalVelocityX, finalVelocityY);
 	}
 
+	public boolean outOfBorderCheck() {
+		if (centreX < (float) Main.WINDOW_WIDTH * 0.05f) return true;
+		if (centreX > (float) Main.WINDOW_WIDTH * 0.95f) return true;
+		if (centreY < (float) Main.WINDOW_WIDTH * 0.05f) return true;
+		if (centreY > (float) Main.WINDOW_WIDTH * 0.95f) return true;
+		return false;
+	}
+
 	@Override
 	void move(float moveX, float moveY) {
 		centreX += moveX * Main.deltaTime;

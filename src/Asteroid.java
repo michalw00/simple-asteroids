@@ -51,8 +51,6 @@ public class Asteroid extends Entity {
 		int distance = MathUtils.calculateDistance((int)Main.ship.centreX, (int)Main.ship.centreY, (int)centreX, (int)centreY);
 		if (distance < Main.ship.radius + (radius - 10) && !Main.spawnProtection) { // if ship collides with asteroid
 			Main.ship.respawn();
-			Main.spawnProtection = true;
-			Main.score -= 300;
 		}
 
 		if (Math.abs(centreX) > Main.WINDOW_WIDTH || Math.abs(centreY) > Main.WINDOW_HEIGHT) { // if asteroid hits the border
@@ -70,6 +68,21 @@ public class Asteroid extends Entity {
 			}
 		}
 		return false;
+	}
+
+	public void outOfBorderCheck() {
+		if (centreX < 0.05f * Main.WINDOW_WIDTH) {
+			centreX = 0.95f * Main.WINDOW_WIDTH;
+		}
+		if (centreX > 0.95f * Main.WINDOW_WIDTH) {
+			centreX = 0.05f * Main.WINDOW_WIDTH;
+		}
+		if (centreY < 0.05f * Main.WINDOW_WIDTH) {
+			centreY = 0.95f * Main.WINDOW_WIDTH;
+		}
+		if (centreY > 0.95f * Main.WINDOW_WIDTH) {
+			centreY = 0.05f * Main.WINDOW_WIDTH;
+		}
 	}
 
 	@Override

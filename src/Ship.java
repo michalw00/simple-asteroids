@@ -53,12 +53,29 @@ public class Ship extends Entity {
 
 	public void respawn() {
 		Main.lives--;
+		Main.spawnProtection = true;
+		Main.score -= 300;
 		rotation = 0;
 		centreX = (float) (Main.WINDOW_WIDTH / 2);
 		centreY = (float) (Main.WINDOW_HEIGHT / 2);
 		velocityX = 0;
 		velocityY = 0;
 		acceleration = 0;
+	}
+
+	public void outOfBorderCheck() {
+		if (centreX < 0.05f * Main.WINDOW_WIDTH) {
+			centreX = 0.95f * Main.WINDOW_WIDTH;
+		}
+		if (centreX > 0.95f * Main.WINDOW_WIDTH) {
+			centreX = 0.05f * Main.WINDOW_WIDTH;
+		}
+		if (centreY < 0.05f * Main.WINDOW_WIDTH) {
+			centreY = 0.95f * Main.WINDOW_WIDTH;
+		}
+		if (centreY > 0.95f * Main.WINDOW_WIDTH) {
+			centreY = 0.05f * Main.WINDOW_WIDTH;
+		}
 	}
 
 	@Override

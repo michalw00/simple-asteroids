@@ -2,88 +2,86 @@ import java.util.Vector;
 
 public class Vector2 {
     public float X = 0.0f, Y = 0.0f;
-
-    static Vector2 FromAngle(double radians) {
+    static Vector2 fromAngle(double radians) {
         Vector2 result = new Vector2();
         //double radians = Math.toRadians((double) degrees);
         result.X = 0.0f + (float) (Math.sin(radians));
         result.Y = 0.0f - (float) (Math.cos(radians));
         return result;
     }
-    public Vector2 Perpendicular() {
+    public Vector2 perpendicular() {
         Vector2 result = new Vector2();
         result.X = +Y;
         result.Y = -X;
         return result;
     }
-
-    public Vector2 Opposite() {
+    public Vector2 opposite() {
         Vector2 result = new Vector2();
         result.X = -X;
         result.Y = -Y;
         return result;
     }
 
-    public float Dot() {
+    public float dot() {
         float result = X * X + Y * Y;
         return result;
     }
 
-    public float Dot(Vector2 V) {
+    public float dot(Vector2 V) {
         float result = X * V.X + Y * V.Y;
         return result;
     }
 
-    public float Length() {
-        float result = (float) Math.sqrt((double) Dot());
+    public float length() {
+        float result = (float) Math.sqrt((double) dot());
         return result;
     }
-   public Vector2 Mul(float scalar) {
+   public Vector2 mul(float scalar) {
         Vector2 result = new Vector2();
         result.X *= scalar;
         result.Y *= scalar;
         return result;
     }
-    public Vector2 Mul(Vector2 V) {
+    public Vector2 mul(Vector2 V) {
         Vector2 result = new Vector2();
         result.X = X * V.X;
         result.Y = Y * V.Y;
         return result;
     }
 
-    public Vector2 Div(float scalar) {
+    public Vector2 div(float scalar) {
         Vector2 result = new Vector2();
         result.X /= scalar;
         result.Y /= scalar;
         return result;
     }
-    public Vector2 Div(Vector2 V) {
+    public Vector2 div(Vector2 V) {
         Vector2 result = new Vector2();
         result.X = X / V.X;
         result.Y = Y / V.Y;
         return result;
     }
 
-    public Vector2 Add(float scalar) {
+    public Vector2 add(float scalar) {
         Vector2 result = new Vector2();
         result.X += scalar;
         result.Y += scalar;
         return result;
     }
-    public Vector2 Add(Vector2 V) {
+    public Vector2 add(Vector2 V) {
         Vector2 result = new Vector2();
         result.X = X + V.X;
         result.Y = Y + V.Y;
         return result;
     }
 
-    public Vector2 Sub(float scalar) {
+    public Vector2 sub(float scalar) {
         Vector2 result = new Vector2();
         result.X -= scalar;
         result.Y -= scalar;
         return result;
     }
-    public Vector2 Sub(Vector2 V) {
+    public Vector2 sub(Vector2 V) {
         Vector2 result = new Vector2();
         result.X = X - V.X;
         result.Y = Y - V.Y;
