@@ -4,7 +4,8 @@ import java.util.Random;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Asteroid extends Entity {
-	private final int numSegments, seed, speedModifier;
+	private final int numSegments, seed;
+	private int speedModifier;
 	public int radius;
 	private final float initialX, initialY;
 	private final float[][] vertexCoordinates;
@@ -19,15 +20,12 @@ public class Asteroid extends Entity {
 		seed = (int) (Math.random() * 50);
 		vertexCoordinates = new float[2][numSegments];
 
-		if (radius < 20) {
-			speedModifier = Main.ASTEROID_SPEED * 9;
-		} else speedModifier = Main.ASTEROID_SPEED;
-
 		spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
 		initialX = (float) (Main.WINDOW_WIDTH/2 + Main.ASTEROID_SPAWN_RADIUS * Math.cos(spawnAngle));
 		initialY = (float) (Main.WINDOW_WIDTH/2 - Main.ASTEROID_SPAWN_RADIUS * Math.sin(spawnAngle));
 		this.centreX = initialX;
 		this.centreY = initialY;
+		initializeSpeedModifier();
 		initializeVertexCoordinates();
 	}
 
@@ -38,24 +36,22 @@ public class Asteroid extends Entity {
 		seed = (int) (Math.random() * 50);
 		vertexCoordinates = new float[2][numSegments];
 
-		if (radius < 20) {
-			speedModifier = Main.ASTEROID_SPEED * 9;
-		} else speedModifier = Main.ASTEROID_SPEED;
-
 		this.spawnAngle = Math.toRadians(spawnAngle);
 		this.initialX = initialX;
 		this.initialY = initialY;
 		this.centreX = initialX;
 		this.centreY = initialY;
+		initializeSpeedModifier();
 		initializeVertexCoordinates();
 	}
 
-	private void initializeVertexCoordinates() {
-		glPushMatrix();
-		glTranslatef(centreX, centreY, 0.0f);
-		glRotatef(rotation, 0, 0, 1.0f);
-		glBegin(GL_LINE_LOOP);
+	private void initializeSpeedModifier() {
+		if (radius < 20) {
+			speedModifier = Main.ASTEROID_SPEED * 9;
+		} else speedModifier = Main.ASTEROID_SPEED;
+	}
 
+	private void initializeVertexCoordinates() {
 		Random randomSeries = new Random();
 		randomSeries.setSeed(seed);
 
@@ -65,15 +61,10 @@ public class Asteroid extends Entity {
 			float displacement = randomSeries.nextFloat() * maxDisplacement;
 			vertexCoordinates[0][i] = (float) (Math.cos(angle) * (radius - displacement));
 			vertexCoordinates[1][i] = (float) (Math.sin(angle) * (radius - displacement));
-			glVertex2f(vertexCoordinates[0][i], vertexCoordinates[1][i]);
 		}
-
-		glEnd();
-		glPopMatrix();
-
 	}
 
-	boolean collision() {
+	public boolean collision() {
 		int distance = MathUtils.calculateDistance((int)Main.ship.centreX, (int)Main.ship.centreY, (int)centreX, (int)centreY);
 		if (distance < Main.ship.radius + (radius - 10) && !Main.spawnProtection) { // if ship collides with asteroid
 			Main.ship.respawn();

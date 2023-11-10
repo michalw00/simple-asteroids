@@ -14,9 +14,8 @@ public class Projectile extends Entity {
 	void calculateVelocity() {
 		float velocityX = (float) Math.sin(Math.toRadians(originRotation));
 		float velocityY = (float) Math.cos(Math.toRadians(originRotation));
-		int projectileSpeed = 450;
-		float finalVelocityX = velocityX * projectileSpeed;
-		float finalVelocityY = velocityY * projectileSpeed;
+		float finalVelocityX = velocityX * Main.PROJECTILE_SPEED;
+		float finalVelocityY = velocityY * Main.PROJECTILE_SPEED;
 		move(finalVelocityX, finalVelocityY);
 	}
 

@@ -17,7 +17,6 @@ public class Ship extends Entity {
 		radius = 1;
 		centreX = Main.WINDOW_WIDTH/2.0f;
 		centreY = Main.WINDOW_HEIGHT/2.0f+100.0f;
-		draw();
 	}
 
 	public void rotate(float angle) {

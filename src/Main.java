@@ -10,16 +10,18 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 class Main {
 	static final int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
-	static private long window;
+	static final String WINDOW_TITLE = "Asteroids";
+	private static long window;
 	private boolean spacePressed = false;
 	private static double previousTime;
 	public static float deltaTime;
 
-	static final int MIN_RADIUS = 40, MAX_RADIUS = 65;
-	static final int MIN_SEGMENTS = 5, MAX_SEGMENTS = 9;
-	static final int ASTEROID_SPAWN_RADIUS = 500, ASTEROID_SPEED = 100;
-	static int ASTEROID_AMOUNT_LOWER_LIMIT = 1, ASTEROID_AMOUNT_UPPER_LIMIT = 15, ASTEROID_INITIAL_AMOUNT = 6;
-	static final float ASTEROID_SPAWN_DELAY = 0.2f;
+	public static final int MIN_RADIUS = 40, MAX_RADIUS = 65;
+	public static final int MIN_SEGMENTS = 5, MAX_SEGMENTS = 9;
+	public static final int ASTEROID_SPAWN_RADIUS = 500, ASTEROID_SPEED = 100;
+	public static final int PROJECTILE_SPEED = 450;
+	public static int ASTEROID_AMOUNT_LOWER_LIMIT = 1, ASTEROID_AMOUNT_UPPER_LIMIT = 15, ASTEROID_INITIAL_AMOUNT = 6;
+	public static final float ASTEROID_SPAWN_DELAY = 0.2f;
 
 	public static Ship ship;
 	public static ArrayList<Asteroid> asteroids;
@@ -29,12 +31,12 @@ class Main {
 
 
 	Main() {
+		GLFWErrorCallback.createPrint(System.err).set();
 		if (!glfwInit()) {
 			System.err.println("Error: GLFW initialization failed.");
 			System.exit(1);
 		}
-		GLFWErrorCallback.createPrint(System.err).set();
-		window = GLFW.glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Asteroids", 0, 0);
+		window = GLFW.glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, 0, 0);
 		if (window == NULL) throw new RuntimeException("Failed to create the GLFW window.");
 		GLFW.glfwMakeContextCurrent(window);
 		GL.createCapabilities();
