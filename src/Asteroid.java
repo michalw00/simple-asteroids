@@ -7,6 +7,7 @@ public class Asteroid extends Entity {
 	private final int numSegments, seed, speedModifier;
 	public int radius;
 	private final float initialX, initialY;
+	private final float[][] vertexCoordinates;
 	private float rotation;
 	private final double spawnAngle;
 
@@ -16,6 +17,7 @@ public class Asteroid extends Entity {
 		this.radius = radius;
 		rotation = 0;
 		seed = (int) (Math.random() * 50);
+		vertexCoordinates = new float[2][numSegments];
 
 		if (radius < 20) {
 			speedModifier = Main.ASTEROID_SPEED * 9;
@@ -26,7 +28,7 @@ public class Asteroid extends Entity {
 		initialY = (float) (Main.WINDOW_WIDTH/2 - Main.ASTEROID_SPAWN_RADIUS * Math.sin(spawnAngle));
 		this.centreX = initialX;
 		this.centreY = initialY;
-		draw();
+		initializeVertexCoordinates();
 	}
 
 	public Asteroid(int numSegments, int radius, float initialX, float initialY, double spawnAngle) {
@@ -34,6 +36,7 @@ public class Asteroid extends Entity {
 		this.radius = radius;
 		rotation = 0;
 		seed = (int) (Math.random() * 50);
+		vertexCoordinates = new float[2][numSegments];
 
 		if (radius < 20) {
 			speedModifier = Main.ASTEROID_SPEED * 9;
@@ -44,7 +47,30 @@ public class Asteroid extends Entity {
 		this.initialY = initialY;
 		this.centreX = initialX;
 		this.centreY = initialY;
-		draw();
+		initializeVertexCoordinates();
+	}
+
+	private void initializeVertexCoordinates() {
+		glPushMatrix();
+		glTranslatef(centreX, centreY, 0.0f);
+		glRotatef(rotation, 0, 0, 1.0f);
+		glBegin(GL_LINE_LOOP);
+
+		Random randomSeries = new Random();
+		randomSeries.setSeed(seed);
+
+		for (int i = 0; i < this.numSegments; i++) {
+			float angle = 2.0f * (float) Math.PI * i / this.numSegments;
+			float maxDisplacement = 15.0f;
+			float displacement = randomSeries.nextFloat() * maxDisplacement;
+			vertexCoordinates[0][i] = (float) (Math.cos(angle) * (radius - displacement));
+			vertexCoordinates[1][i] = (float) (Math.sin(angle) * (radius - displacement));
+			glVertex2f(vertexCoordinates[0][i], vertexCoordinates[1][i]);
+		}
+
+		glEnd();
+		glPopMatrix();
+
 	}
 
 	boolean collision() {
@@ -109,12 +135,7 @@ public class Asteroid extends Entity {
 		randomSeries.setSeed(seed);
 
 		for (int i = 0; i < this.numSegments; i++) {
-			float angle = 2.0f * (float) Math.PI * i / this.numSegments;
-			float maxDisplacement = 15.0f;
-			float displacement = randomSeries.nextFloat() * maxDisplacement;
-			float x = (float) (Math.cos(angle) * (radius - displacement));
-			float y = (float) (Math.sin(angle) * (radius - displacement));
-			glVertex2f(x, y); // todo: store x and y in an array; this doesn't have to be calculated everytime
+			glVertex2f(vertexCoordinates[0][i], vertexCoordinates[1][i]);
 		}
 
 		glEnd();
