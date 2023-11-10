@@ -18,7 +18,7 @@ class Main {
 	static final int MIN_RADIUS = 40, MAX_RADIUS = 65;
 	static final int MIN_SEGMENTS = 5, MAX_SEGMENTS = 9;
 	static final int ASTEROID_SPAWN_RADIUS = 500, ASTEROID_SPEED = 100;
-	static int ASTEROID_AMOUNT_LOWER_LIMIT = 1, ASTEROID_AMOUNT_UPPER_LIMIT = 15;
+	static int ASTEROID_AMOUNT_LOWER_LIMIT = 1, ASTEROID_AMOUNT_UPPER_LIMIT = 15, ASTEROID_INITIAL_AMOUNT = 6;
 	static final float ASTEROID_SPAWN_DELAY = 0.2f;
 
 	public static Ship ship;
@@ -46,7 +46,7 @@ class Main {
 	private void loop() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		ship = new Ship();
-		initializeAsteroids(6);
+		initializeAsteroids(ASTEROID_INITIAL_AMOUNT);
 		float accumulator = 0.0f;
 		float accumulatorSpawnProtection = 0.0f;
 		float accumulatorSpawnProtectionInner = 0.0f;
