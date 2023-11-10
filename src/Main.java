@@ -9,25 +9,32 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 class Main {
-	static final int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
-	static final String WINDOW_TITLE = "Asteroids";
-	private static long window;
+	public static final int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
+	private final String WINDOW_TITLE = "Asteroids";
+	private long window;
 	private boolean spacePressed = false;
-	private static double previousTime;
+	private double previousTime;
 	public static float deltaTime;
 
 	public static final int MIN_RADIUS = 40, MAX_RADIUS = 65;
 	public static final int MIN_SEGMENTS = 5, MAX_SEGMENTS = 9;
 	public static final int ASTEROID_SPAWN_RADIUS = 500, ASTEROID_SPEED = 100;
 	public static final int PROJECTILE_SPEED = 450;
-	public static int ASTEROID_AMOUNT_LOWER_LIMIT = 1, ASTEROID_AMOUNT_UPPER_LIMIT = 15, ASTEROID_INITIAL_AMOUNT = 6;
+	public static final int ASTEROID_INITIAL_AMOUNT = 6;
 	public static final float ASTEROID_SPAWN_DELAY = 0.2f;
+	public static final float PROJECTILE_SHOOT_DELAY = 0.3f;
+	public static int asteroidLowerLimit = 1, asteroidUpperLimit = 15;
 
 	public static Ship ship;
 	public static ArrayList<Asteroid> asteroids;
-	public static int score = 0; // 10*asteroid.radius per asteroid, life lost penalty = -300
+	public static int score = 0; // 10*asteroid.radius per asteroid, life lost penalty score -= 300, game over score = 0
 	public static int lives = 3;
 	public static boolean spawnProtection = false;
+
+	private float accumulatorAsteroidSpawn = 0.0f;
+	private float accumulatorShootDelay = PROJECTILE_SHOOT_DELAY;
+	private float accumulatorSpawnProtection = 0.0f;
+	private float accumulatorSpawnProtectionInner = 0.0f;
 
 
 	Main() {
@@ -45,27 +52,25 @@ class Main {
 		glOrtho(0,WINDOW_WIDTH,WINDOW_HEIGHT,0,0,1.0);
 	}
 
-	private void loop() {
+	private void gameLoop() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		ship = new Ship();
 		initializeAsteroids(ASTEROID_INITIAL_AMOUNT);
-		float accumulator = 0.0f;
-		float accumulatorSpawnProtection = 0.0f;
-		float accumulatorSpawnProtectionInner = 0.0f;
+
 
 		while (!glfwWindowShouldClose(window)) {
 			System.out.println("Score = "+score); // todo: add proper text score counter within the window
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			// Asteroid spawn logic.
-			accumulator += deltaTime;
-			if (accumulator >= ASTEROID_SPAWN_DELAY && asteroids.size() <= ASTEROID_AMOUNT_LOWER_LIMIT) {
-				if (asteroids.size() < ASTEROID_AMOUNT_UPPER_LIMIT) {
+			accumulatorAsteroidSpawn += deltaTime;
+			if (accumulatorAsteroidSpawn >= ASTEROID_SPAWN_DELAY && asteroids.size() <= asteroidLowerLimit) {
+				if (asteroids.size() < asteroidUpperLimit) {
 					asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
 							MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
-					ASTEROID_AMOUNT_LOWER_LIMIT++;
+					asteroidLowerLimit++;
 				}
-				accumulator = 0;
+				accumulatorAsteroidSpawn = 0;
 			}
 
 			// Asteroid handling.
@@ -177,9 +182,11 @@ class Main {
 		if (keyStateW == GLFW_RELEASE) {
 			ship.updateAcceleration(0, false);
 		}
-		if (keyStateSpace == GLFW_PRESS && !spacePressed) {
+		accumulatorShootDelay += deltaTime;
+		if (keyStateSpace == GLFW_PRESS && !spacePressed && accumulatorShootDelay > PROJECTILE_SHOOT_DELAY) {
 			ship.projectiles.add(new Projectile(ship));
 			spacePressed = true;
+			accumulatorShootDelay = 0;
 		}
 		if (keyStateSpace == GLFW_RELEASE) {
 			spacePressed = false;
@@ -188,6 +195,6 @@ class Main {
 
 	public static void main(String[] args) {
 		Main main = new Main();
-		main.loop();
+		main.gameLoop();
 	}
 }
