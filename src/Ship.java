@@ -70,11 +70,11 @@ public class Ship extends Entity {
 		if (centreX > 0.95f * Main.WINDOW_WIDTH) {
 			centreX = 0.05f * Main.WINDOW_WIDTH;
 		}
-		if (centreY < 0.05f * Main.WINDOW_WIDTH) {
-			centreY = 0.95f * Main.WINDOW_WIDTH;
+		if (centreY < 0.05f * Main.WINDOW_HEIGHT) {
+			centreY = 0.95f * Main.WINDOW_HEIGHT;
 		}
-		if (centreY > 0.95f * Main.WINDOW_WIDTH) {
-			centreY = 0.05f * Main.WINDOW_WIDTH;
+		if (centreY > 0.95f * Main.WINDOW_HEIGHT) {
+			centreY = 0.05f * Main.WINDOW_HEIGHT;
 		}
 	}
 

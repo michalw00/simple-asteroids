@@ -21,11 +21,10 @@ public class Projectile extends Entity {
 	}
 
 	public boolean outOfBorderCheck() {
-		if (centreX < (float) Main.WINDOW_WIDTH * 0.05f) return true;
-		if (centreX > (float) Main.WINDOW_WIDTH * 0.95f) return true;
-		if (centreY < (float) Main.WINDOW_WIDTH * 0.05f) return true;
-		if (centreY > (float) Main.WINDOW_WIDTH * 0.95f) return true;
-		return false;
+		return (centreX < Main.WINDOW_WIDTH * 0.05f) ||
+				(centreX > Main.WINDOW_WIDTH * 0.95f) ||
+				(centreY < Main.WINDOW_HEIGHT * 0.05f) ||
+				(centreY > Main.WINDOW_HEIGHT * 0.95f);
 	}
 
 	@Override
