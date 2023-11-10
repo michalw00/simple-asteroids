@@ -79,10 +79,6 @@ public class Asteroid extends Entity {
 			Main.ship.respawn();
 		}
 
-		if (Math.abs(centreX) > Main.WINDOW_WIDTH || Math.abs(centreY) > Main.WINDOW_HEIGHT) { // if asteroid hits the border
-			// todo: need to add spawn protection first, so I can spawn asteroids out of border
-		}
-
 		Iterator<Projectile> iterator = Main.ship.projectiles.iterator();
 		while (iterator.hasNext()) {
 			Projectile projectile = iterator.next();
@@ -111,8 +107,7 @@ public class Asteroid extends Entity {
 		}
 	}
 
-	@Override
-	void move(float moveX, float moveY) {
+	public void updateRotationAndMovement() {
 		rotation = rotation + speedModifier * Main.deltaTime;
 		float directionX = (float) (Math.sin(spawnAngle));
 		float directionY = -(float) (Math.cos(spawnAngle));
@@ -120,8 +115,13 @@ public class Asteroid extends Entity {
 		directionX = -directionX;
 		float speedModifiedX = speedModifier * Main.deltaTime * directionX;
 		float speedModifiedY = speedModifier * Main.deltaTime * directionY;
-		centreX += speedModifiedX;
-		centreY += speedModifiedY;
+		move(speedModifiedX, speedModifiedY);
+	}
+
+	@Override
+	void move(float moveX, float moveY) {
+		centreX += moveX;
+		centreY += moveY;
 	}
 
 	@Override

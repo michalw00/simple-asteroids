@@ -2,7 +2,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glColor3f;
 
 public class Projectile extends Entity {
-	float finalVelocityX, finalVelocityY, originRotation;
+	private final float originRotation;
 
 	public Projectile(Ship sourceShip) {
 		centreX = sourceShip.centreX;
@@ -15,8 +15,8 @@ public class Projectile extends Entity {
 		float velocityX = (float) Math.sin(Math.toRadians(originRotation));
 		float velocityY = (float) Math.cos(Math.toRadians(originRotation));
 		int projectileSpeed = 450;
-		finalVelocityX = velocityX * projectileSpeed;
-		finalVelocityY = velocityY * projectileSpeed;
+		float finalVelocityX = velocityX * projectileSpeed;
+		float finalVelocityY = velocityY * projectileSpeed;
 		move(finalVelocityX, finalVelocityY);
 	}
 
@@ -40,10 +40,10 @@ public class Projectile extends Entity {
 
 		glColor3f(1.0f, 0.0f, 0.0f);
 		glBegin(GL_QUADS);
-		glVertex2f(-1.0f, -1.0f); // Bottom-left vertex
-		glVertex2f(1.0f, -1.0f);  // Bottom-right vertex
-		glVertex2f(1.0f, 1.0f);   // Top-right vertex
-		glVertex2f(-1.0f, 1.0f);  // Top-left vertex
+		glVertex2f(-1.0f, -1.0f);
+		glVertex2f(1.0f, -1.0f);
+		glVertex2f(1.0f, 1.0f);
+		glVertex2f(-1.0f, 1.0f);
 		glEnd();
 		glColor3f(1.0f, 1.0f, 1.0f);
 

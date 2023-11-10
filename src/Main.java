@@ -18,12 +18,12 @@ class Main {
 	static final int MIN_RADIUS = 40, MAX_RADIUS = 65;
 	static final int MIN_SEGMENTS = 5, MAX_SEGMENTS = 9;
 	static final int ASTEROID_SPAWN_RADIUS = 500, ASTEROID_SPEED = 100;
-	static int ASTEROID_AMOUNT_LOWER_LIMIT = 1, ASTEROID_AMOUNT_UPPER_LIMIT = 5;
+	static int ASTEROID_AMOUNT_LOWER_LIMIT = 1, ASTEROID_AMOUNT_UPPER_LIMIT = 15;
 	static final float ASTEROID_SPAWN_DELAY = 0.2f;
 
 	public static Ship ship;
 	public static ArrayList<Asteroid> asteroids;
-	public static int score = 0; // 10*asteroid.radius per asteroid, live lost penalty = -300
+	public static int score = 0; // 10*asteroid.radius per asteroid, life lost penalty = -300
 	public static int lives = 3;
 	public static boolean spawnProtection = false;
 
@@ -53,27 +53,26 @@ class Main {
 
 		while (!glfwWindowShouldClose(window)) {
 			System.out.println("Score = "+score); // todo: add proper text score counter within the window
-			double time = glfwGetTime();
-			float minStep = 1.0f;
-			deltaTime = Math.min((float) (time - previousTime), minStep);
-			previousTime = time;
-
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			// Asteroid spawn logic.
 			accumulator += deltaTime;
 			if (accumulator >= ASTEROID_SPAWN_DELAY && asteroids.size() <= ASTEROID_AMOUNT_LOWER_LIMIT) {
-				asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
-						MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
-				ASTEROID_AMOUNT_LOWER_LIMIT++;
+				if (asteroids.size() < ASTEROID_AMOUNT_UPPER_LIMIT) {
+					asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
+							MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
+					ASTEROID_AMOUNT_LOWER_LIMIT++;
+				}
 				accumulator = 0;
 			}
 
+			// Asteroid handling.
 			ListIterator<Asteroid> iterator = asteroids.listIterator();
 			while (iterator.hasNext()) {
 				Asteroid asteroid = iterator.next();
 				asteroid.outOfBorderCheck();
 				asteroid.draw();
-				asteroid.move(100.0f, 100.0f); // todo: moveX and moveY are useless
+				asteroid.updateRotationAndMovement();
 				if (asteroid.collision()) {
 					float tempX = asteroid.centreX;
 					float tempY = asteroid.centreY;
@@ -91,6 +90,7 @@ class Main {
 				}
 			}
 
+			// Projectile handling.
 			ListIterator<Projectile> projectileListIterator = ship.projectiles.listIterator();
 			while (projectileListIterator.hasNext()) {
 				Projectile projectile = projectileListIterator.next();
@@ -99,8 +99,7 @@ class Main {
 				projectile.draw();
 			}
 
-			controller();
-			ship.outOfBorderCheck();
+			// Ship handling.
 			if (!spawnProtection) {
 				ship.draw();
 				accumulatorSpawnProtection = 0;
@@ -117,13 +116,24 @@ class Main {
 					accumulatorSpawnProtectionInner = 0;
 				}
 			}
+			ship.outOfBorderCheck();
+			controller();
 
+			// Etc.
+			updateDeltaTime();
 			drawPlayableAreaBorders();
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
 
 		glfwTerminate();
+	}
+
+	private void updateDeltaTime() {
+		double time = glfwGetTime();
+		float minStep = 1.0f;
+		deltaTime = Math.min((float) (time - previousTime), minStep);
+		previousTime = time;
 	}
 
 	private void drawPlayableAreaBorders() {
