@@ -13,8 +13,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 class Main {
 	public static final int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
-	private final String WINDOW_TITLE = "Asteroids";
-	private long window;
+	private static final String WINDOW_TITLE = "Asteroids";
+	private final long window;
 	private boolean spacePressed = false;
 	private double previousTime;
 	public static float deltaTime;
@@ -58,7 +58,7 @@ class Main {
 	private void gameLoop() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		ship = new Ship();
-		initializeAsteroids(ASTEROID_INITIAL_AMOUNT);
+		initializeAsteroids();
 
 
 		while (!glfwWindowShouldClose(window)) {
@@ -163,9 +163,9 @@ class Main {
 		glPopMatrix();
 	}
 
-	private void initializeAsteroids(int amount) {
+	private void initializeAsteroids() {
 		asteroids = new ArrayList<>();
-		for (int i = 0; i < amount; i++) {
+		for (int i = 0; i < ASTEROID_INITIAL_AMOUNT; i++) {
 			asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
 					MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
 		}
@@ -215,7 +215,7 @@ class Main {
 			}
 			for (int texture : Glyphs) {
 				glBindTexture(GL_TEXTURE_2D, texture);
-				glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA,8,8,0,GL_RGBA,GL_UNSIGNED_BYTE,pixels);
+				glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA,8,8,0,GL_RGBA,GL_UNSIGNED_BYTE, ByteBuffer.allocateDirect(pixels.length).put(pixels).flip());
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 			}
