@@ -3,7 +3,6 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -62,7 +61,6 @@ class Main {
 
 
 		while (!glfwWindowShouldClose(window)) {
-			System.out.println("Score = " + score); // todo: add proper text score counter within the window
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			// Asteroid spawn logic.
@@ -132,9 +130,8 @@ class Main {
 			// Etc.
 			updateDeltaTime();
 			drawPlayableAreaBorders();
-
-			drawText("SCORE",32.0f,32.0f);
-
+			drawText("SCORE:"+score,60.0f,15.0f);
+			drawText("LIVES:"+lives,280.0f,15.0f); // todo: game over state
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
@@ -235,7 +232,7 @@ class Main {
 			}
 		}
 
-		float PixelHeight = 32.0f;
+		float PixelHeight = 16.0f;
 		for(int index = 0; index < text.length(); index++) {
 			char Codepoint = text.charAt(index);
 			Codepoint = Character.toUpperCase(Codepoint);

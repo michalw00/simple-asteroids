@@ -88,6 +88,7 @@ public class Ship extends Entity {
 		glPushMatrix();
 		glTranslatef(centreX, centreY, 0.0f);
 		glRotatef(rotation, 0.0f, 0.0f, 1.0f);
+		glScalef(1.8f, 1.2f, 1.0f);
 
 		glBegin(GL_LINE_LOOP);
 		glColor3f(1.0f, 1.0f, 1.0f);
