@@ -1,6 +1,9 @@
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -49,7 +52,7 @@ class Main {
 		GL.createCapabilities();
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glLoadIdentity();
-		glOrtho(0,WINDOW_WIDTH,WINDOW_HEIGHT,0,0,1.0);
+		glOrtho(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, 1.0);
 	}
 
 	private void gameLoop() {
@@ -59,7 +62,7 @@ class Main {
 
 
 		while (!glfwWindowShouldClose(window)) {
-			System.out.println("Score = "+score); // todo: add proper text score counter within the window
+			System.out.println("Score = " + score); // todo: add proper text score counter within the window
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			// Asteroid spawn logic.
@@ -129,6 +132,9 @@ class Main {
 			// Etc.
 			updateDeltaTime();
 			drawPlayableAreaBorders();
+
+			drawText("Hello, World!",0.0f,0.0f);
+
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
@@ -150,8 +156,8 @@ class Main {
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glVertex2f(WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 5 / 100);  // Top-left corner
 		glVertex2f(WINDOW_WIDTH - WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 5 / 100);  // Top-right corner
-		glVertex2f(WINDOW_WIDTH - WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 95/100);  // Bottom-right corner
-		glVertex2f(WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 95/100);  // Bottom-left corner
+		glVertex2f(WINDOW_WIDTH - WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 95 / 100);  // Bottom-right corner
+		glVertex2f(WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 95 / 100);  // Bottom-left corner
 		glEnd();
 
 		glPopMatrix();
@@ -191,6 +197,49 @@ class Main {
 		if (keyStateSpace == GLFW_RELEASE) {
 			spacePressed = false;
 		}
+	}
+
+	public static int[] Glyphs;
+	public static void drawText(String text, float X, float Y) {
+		//48 * 128
+
+		if((Glyphs == null)) {
+			Glyphs = new int[256];
+			glGenTextures(Glyphs);
+			byte []pixels = new byte[8*8*4];
+			for(int index = 0; index < 8*8; index++) {
+				pixels[(index*4)+0] = (byte)255;
+				pixels[(index*4)+1] = (byte)255;
+				pixels[(index*4)+2] = (byte)255;
+				pixels[(index*4)+3] = (byte)255;
+			}
+			for (int texture : Glyphs) {
+				glBindTexture(GL_TEXTURE_2D, texture);
+				glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA,8,8,0,GL_RGBA,GL_UNSIGNED_BYTE,pixels);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+			}
+		}
+
+		glPushMatrix();
+		glTranslatef(X,Y,0.0f);
+		glScalef(64.0f,64.0f,0.0f);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_TEXTURE_2D);
+
+		glBindTexture(GL_TEXTURE_2D, Glyphs[0]);
+		glBegin(GL_QUADS);
+		glColor4f(1.0f,1.0f,1.0f,1.0f);
+		glTexCoord2f(0.0f,0.0f);glVertex2f(0.0f,0.0f);
+		glTexCoord2f(1.0f,0.0f);glVertex2f(1.0f,0.0f);
+		glTexCoord2f(1.0f,1.0f);glVertex2f(1.0f,1.0f);
+		glTexCoord2f(0.0f,1.0f);glVertex2f(0.0f,1.0f);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D,0);
+		glDisable(GL_BLEND);
+		glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
 	}
 
 	public static void main(String[] args) {
