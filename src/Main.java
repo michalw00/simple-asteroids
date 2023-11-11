@@ -154,10 +154,10 @@ class Main {
 
 		glBegin(GL_LINE_LOOP);
 		glColor3f(1.0f, 1.0f, 1.0f);
-		glVertex2f(WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 5 / 100);  // Top-left corner
-		glVertex2f(WINDOW_WIDTH - WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 5 / 100);  // Top-right corner
-		glVertex2f(WINDOW_WIDTH - WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 95 / 100);  // Bottom-right corner
-		glVertex2f(WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 95 / 100);  // Bottom-left corner
+		glVertex2i(WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 5 / 100);  // Top-left corner
+		glVertex2i(WINDOW_WIDTH - WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 5 / 100);  // Top-right corner
+		glVertex2i(WINDOW_WIDTH - WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 95 / 100);  // Bottom-right corner
+		glVertex2i(WINDOW_WIDTH * 5 / 100, WINDOW_HEIGHT * 95 / 100);  // Bottom-left corner
 		glEnd();
 
 		glPopMatrix();
