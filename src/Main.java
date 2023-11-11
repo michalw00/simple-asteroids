@@ -133,7 +133,7 @@ class Main {
 			updateDeltaTime();
 			drawPlayableAreaBorders();
 
-			drawText("Hello, World!",0.0f,0.0f);
+			drawText("SCORE",32.0f,32.0f);
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
@@ -206,14 +206,28 @@ class Main {
 		if((Glyphs == null)) {
 			Glyphs = new int[256];
 			glGenTextures(Glyphs);
-			byte []pixels = new byte[8*8*4];
-			for(int index = 0; index < 8*8; index++) {
-				pixels[(index*4)+0] = (byte)255;
-				pixels[(index*4)+1] = (byte)255;
-				pixels[(index*4)+2] = (byte)255;
-				pixels[(index*4)+3] = (byte)255;
-			}
+
+			int Codepoint = 0;
 			for (int texture : Glyphs) {
+				byte []pixels = new byte[8*8*4];
+
+				int OffsetX = (Codepoint % 16) * 8;
+				int OffsetY = (Codepoint / 16) * 8;
+				Codepoint++;
+
+				int Offset = ((OffsetY*Font.Stride)+OffsetX);
+				if(Offset<Font.Pixels.length) {
+					for (int y = 0; y < 8; y++) {
+						for (int x = 0; x < 8; x++) {
+							int index = y * 8 + x;
+							int Color = Font.Pixels[Offset + ((y * Font.Stride + x))];
+							pixels[(index * 4) + 0] = (byte) Color;
+							pixels[(index * 4) + 1] = (byte) Color;
+							pixels[(index * 4) + 2] = (byte) Color;
+							pixels[(index * 4) + 3] = (byte) Color;
+						}
+					}
+				}
 				glBindTexture(GL_TEXTURE_2D, texture);
 				glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA,8,8,0,GL_RGBA,GL_UNSIGNED_BYTE, ByteBuffer.allocateDirect(pixels.length).put(pixels).flip());
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -221,25 +235,35 @@ class Main {
 			}
 		}
 
-		glPushMatrix();
-		glTranslatef(X,Y,0.0f);
-		glScalef(64.0f,64.0f,0.0f);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_TEXTURE_2D);
+		float PixelHeight = 32.0f;
+		for(int index = 0; index < text.length(); index++) {
+			char Codepoint = text.charAt(index);
+			Codepoint = Character.toUpperCase(Codepoint);
+			glPushMatrix();
+			glTranslatef(X, Y, 0.0f);
+			glScalef(PixelHeight, PixelHeight, 0.0f);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glEnable(GL_TEXTURE_2D);
 
-		glBindTexture(GL_TEXTURE_2D, Glyphs[0]);
-		glBegin(GL_QUADS);
-		glColor4f(1.0f,1.0f,1.0f,1.0f);
-		glTexCoord2f(0.0f,0.0f);glVertex2f(0.0f,0.0f);
-		glTexCoord2f(1.0f,0.0f);glVertex2f(1.0f,0.0f);
-		glTexCoord2f(1.0f,1.0f);glVertex2f(1.0f,1.0f);
-		glTexCoord2f(0.0f,1.0f);glVertex2f(0.0f,1.0f);
-		glEnd();
-		glBindTexture(GL_TEXTURE_2D,0);
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		glPopMatrix();
+			glBindTexture(GL_TEXTURE_2D, Glyphs[Codepoint]);
+			glBegin(GL_QUADS);
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			glTexCoord2f(0.0f, 0.0f);
+			glVertex2f(0.0f, 0.0f);
+			glTexCoord2f(1.0f, 0.0f);
+			glVertex2f(1.0f, 0.0f);
+			glTexCoord2f(1.0f, 1.0f);
+			glVertex2f(1.0f, 1.0f);
+			glTexCoord2f(0.0f, 1.0f);
+			glVertex2f(0.0f, 1.0f);
+			glEnd();
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glDisable(GL_BLEND);
+			glDisable(GL_TEXTURE_2D);
+			glPopMatrix();
+			X += PixelHeight;
+		}
 	}
 
 	public static void main(String[] args) {
