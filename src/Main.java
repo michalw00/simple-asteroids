@@ -30,7 +30,7 @@ class Main {
 	public static Ship ship;
 	public static ArrayList<Asteroid> asteroids;
 	public static int score = 0; // 10*asteroid.radius per asteroid, life lost penalty score -= 300, game over score = 0
-	public static int highScore = 0; // 10*asteroid.radius per asteroid, life lost penalty score -= 300, game over score = 0
+	public static int highScore = 0;
 	public static int lives = 3;
 	public static boolean spawnProtection = false;
 	public static boolean isPaused = true;
