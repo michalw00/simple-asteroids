@@ -53,7 +53,11 @@ public class Ship extends Entity {
 	public void respawn() {
 		Main.lives--;
 		Main.spawnProtection = true;
-		Main.score -= 300;
+		if (Main.score >= 300) {
+			Main.score -= 300;
+		} else {
+			Main.score = 0;
+		}
 		rotation = 0;
 		centreX = (float) (Main.WINDOW_WIDTH / 2);
 		centreY = (float) (Main.WINDOW_HEIGHT / 2);

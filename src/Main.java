@@ -30,8 +30,11 @@ class Main {
 	public static Ship ship;
 	public static ArrayList<Asteroid> asteroids;
 	public static int score = 0; // 10*asteroid.radius per asteroid, life lost penalty score -= 300, game over score = 0
+	public static int highScore = 0; // 10*asteroid.radius per asteroid, life lost penalty score -= 300, game over score = 0
 	public static int lives = 3;
 	public static boolean spawnProtection = false;
+	public static boolean isPaused = true;
+	public static String menuState = "PRESS ENTER TO START";
 
 	private float accumulatorAsteroidSpawn = 0.0f;
 	private float accumulatorShootDelay = PROJECTILE_SHOOT_DELAY;
@@ -63,80 +66,100 @@ class Main {
 		while (!glfwWindowShouldClose(window)) {
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			// Asteroid spawn logic.
-			accumulatorAsteroidSpawn += deltaTime;
-			if (accumulatorAsteroidSpawn >= ASTEROID_SPAWN_DELAY && asteroids.size() <= asteroidLowerLimit) {
-				if (asteroids.size() < asteroidUpperLimit) {
-					asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
-							MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
-					asteroidLowerLimit++;
-				}
-				accumulatorAsteroidSpawn = 0;
-			}
+			if (lives <= 0 && !isPaused) {
+				if (highScore < score) highScore = score;
+				restartGameState();
+				isPaused = true;
+				menuState = "PRESS ENTER TO RETRY";
+			} else if (isPaused) menu(menuState);
 
-			// Asteroid handling.
-			ListIterator<Asteroid> iterator = asteroids.listIterator();
-			while (iterator.hasNext()) {
-				Asteroid asteroid = iterator.next();
-				asteroid.outOfBorderCheck();
-				asteroid.draw();
-				asteroid.updateRotationAndMovement();
-				if (asteroid.collision()) {
-					float tempX = asteroid.centreX;
-					float tempY = asteroid.centreY;
-					float tempRadius = asteroid.radius;
-					iterator.remove();
-					if (tempRadius > MIN_RADIUS) {
-						for (int i = 0; i < 4; i++) {
-							int spawnAngle = MathUtils.randomNumber(1, 360);
-							float x = (float) (tempX + tempRadius * Math.cos(spawnAngle));
-							float y = (float) (tempY + tempRadius * Math.sin(spawnAngle));
-							iterator.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
-									MathUtils.randomNumber(MIN_RADIUS / 2, MAX_RADIUS / 2), x, y, spawnAngle));
+			if (!isPaused) {
+				// Asteroid spawn logic.
+				accumulatorAsteroidSpawn += deltaTime;
+				if (accumulatorAsteroidSpawn >= ASTEROID_SPAWN_DELAY && asteroids.size() <= asteroidLowerLimit) {
+					if (asteroids.size() < asteroidUpperLimit) {
+						asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
+								MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
+						asteroidLowerLimit++;
+					}
+					accumulatorAsteroidSpawn = 0;
+				}
+
+				// Asteroid handling.
+				ListIterator<Asteroid> iterator = asteroids.listIterator();
+				while (iterator.hasNext()) {
+					Asteroid asteroid = iterator.next();
+					asteroid.outOfBorderCheck();
+					asteroid.draw();
+					asteroid.updateRotationAndMovement();
+					if (asteroid.collision()) {
+						float tempX = asteroid.centreX;
+						float tempY = asteroid.centreY;
+						float tempRadius = asteroid.radius;
+						iterator.remove();
+						if (tempRadius > MIN_RADIUS) {
+							for (int i = 0; i < 4; i++) {
+								int spawnAngle = MathUtils.randomNumber(1, 360);
+								float x = (float) (tempX + tempRadius * Math.cos(spawnAngle));
+								float y = (float) (tempY + tempRadius * Math.sin(spawnAngle));
+								iterator.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
+										MathUtils.randomNumber(MIN_RADIUS / 2, MAX_RADIUS / 2), x, y, spawnAngle));
+							}
 						}
 					}
 				}
-			}
 
-			// Projectile handling.
-			ListIterator<Projectile> projectileListIterator = ship.projectiles.listIterator();
-			while (projectileListIterator.hasNext()) {
-				Projectile projectile = projectileListIterator.next();
-				projectile.calculateVelocity();
-				if (projectile.outOfBorderCheck()) projectileListIterator.remove();
-				projectile.draw();
-			}
+				// Projectile handling.
+				ListIterator<Projectile> projectileListIterator = ship.projectiles.listIterator();
+				while (projectileListIterator.hasNext()) {
+					Projectile projectile = projectileListIterator.next();
+					projectile.calculateVelocity();
+					if (projectile.outOfBorderCheck()) projectileListIterator.remove();
+					projectile.draw();
+				}
 
-			// Ship handling.
-			if (!spawnProtection) {
-				ship.draw();
-				accumulatorSpawnProtection = 0;
-			} else {
-				accumulatorSpawnProtection += deltaTime;
-				accumulatorSpawnProtectionInner += deltaTime;
-				if (accumulatorSpawnProtection > 0.1f) {
+				// Ship handling.
+				if (!spawnProtection) {
 					ship.draw();
-					accumulatorSpawnProtection = 0.0f;
-				}
-				if (accumulatorSpawnProtectionInner > 5.0f) {
-					spawnProtection = false;
 					accumulatorSpawnProtection = 0;
-					accumulatorSpawnProtectionInner = 0;
+				} else {
+					accumulatorSpawnProtection += deltaTime;
+					accumulatorSpawnProtectionInner += deltaTime;
+					if (accumulatorSpawnProtection > 0.1f) {
+						ship.draw();
+						accumulatorSpawnProtection = 0.0f;
+					}
+					if (accumulatorSpawnProtectionInner > 5.0f) {
+						spawnProtection = false;
+						accumulatorSpawnProtection = 0;
+						accumulatorSpawnProtectionInner = 0;
+					}
 				}
-			}
-			ship.outOfBorderCheck();
-			controller();
+				ship.outOfBorderCheck();
+				controller();
 
-			// Etc.
-			updateDeltaTime();
-			drawPlayableAreaBorders();
-			drawText("SCORE:"+score,60.0f,15.0f);
-			drawText("LIVES:"+lives,280.0f,15.0f); // todo: game over state
+				// Etc.
+				updateDeltaTime();
+				drawPlayableAreaBorders();
+				drawText("SCORE:" + score, 60.0f, 15.0f);
+				drawText("LIVES:" + lives, 280.0f, 15.0f);
+			}
+
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
 
+
 		glfwTerminate();
+	}
+
+	private void menu(String title) {
+		drawText(title,WINDOW_WIDTH/3.0f - title.length(),WINDOW_HEIGHT/2.0f);
+		drawText("HIGH SCORE:"+highScore,WINDOW_WIDTH/9.0f,WINDOW_HEIGHT/7.0f);
+		int keyStateEnter = glfwGetKey(window, GLFW_KEY_ENTER);
+		if (keyStateEnter == GLFW_PRESS) {
+			isPaused = false;
+		}
 	}
 
 	private void updateDeltaTime() {
@@ -166,6 +189,22 @@ class Main {
 			asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
 					MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
 		}
+	}
+
+	private void restartGameState() {
+		asteroidLowerLimit = 1;
+		asteroidUpperLimit = 15;
+
+		ship = new Ship();
+		initializeAsteroids();
+		score = 0;
+		lives = 3;
+		spawnProtection = false;
+
+		accumulatorAsteroidSpawn = 0.0f;
+		accumulatorShootDelay = PROJECTILE_SHOOT_DELAY;
+		accumulatorSpawnProtection = 0.0f;
+		accumulatorSpawnProtectionInner = 0.0f;
 	}
 
 	private void controller() {
