@@ -34,7 +34,7 @@ class Main {
 	public static int lives = 3;
 	public static boolean spawnProtection = false;
 	public static boolean isPaused = true;
-	public static String menuState = "PRESS ENTER TO START";
+	public static String menuText = "PRESS ENTER TO START";
 
 	private float accumulatorAsteroidSpawn = 0.0f;
 	private float accumulatorShootDelay = PROJECTILE_SHOOT_DELAY;
@@ -70,8 +70,8 @@ class Main {
 				if (highScore < score) highScore = score;
 				restartGameState();
 				isPaused = true;
-				menuState = "PRESS ENTER TO RETRY";
-			} else if (isPaused) menu(menuState);
+				menuText = "PRESS ENTER TO RETRY";
+			} else if (isPaused) menu(menuText);
 
 			if (!isPaused) {
 				// Asteroid spawn logic.
