@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public final class MathUtils {
 	private MathUtils() {
 	}
@@ -14,6 +16,19 @@ public final class MathUtils {
 
 	public static float calculateVectorLength(float x, float y) {
 		return (float) Math.sqrt(x*x+y*y);
+	}
+
+	public static float[] getRandomPointInCircle(float centerX, float centerY, float radius) {
+		Random random = new Random();
+
+		double angle = 2.0 * Math.PI * random.nextDouble();
+
+		double randomRadius = radius * Math.sqrt(random.nextDouble());
+
+		float x = (float) (centerX + randomRadius * Math.cos(angle));
+		float y = (float) (centerY + randomRadius * Math.sin(angle));
+
+		return new float[]{x, y};
 	}
 
 }

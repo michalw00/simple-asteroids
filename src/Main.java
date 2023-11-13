@@ -24,11 +24,13 @@ class Main {
 	public static final int PROJECTILE_SPEED = 450;
 	public static final int ASTEROID_INITIAL_AMOUNT = 6;
 	public static final float ASTEROID_SPAWN_DELAY = 0.2f;
-	public static final float PROJECTILE_SHOOT_DELAY = 0.3f;
+	public static final float PROJECTILE_SHOOT_DELAY = 0.5f;
 	public static int asteroidLowerLimit = 1, asteroidUpperLimit = 15;
 
 	public static Ship ship;
+	public static UFO ufo;
 	public static ArrayList<Asteroid> asteroids;
+	public static ArrayList<ArrayList<DebrisProjectile>> debrisFields = new ArrayList<>();
 	public static int score = 0; // 10*asteroid.radius per asteroid, life lost penalty score -= 300, game over score = 0
 	public static int highScore = 0;
 	public static int lives = 3;
@@ -95,7 +97,8 @@ class Main {
 					if (asteroid.collision()) {
 						float tempX = asteroid.centreX;
 						float tempY = asteroid.centreY;
-						float tempRadius = asteroid.radius;
+						int tempRadius = asteroid.radius;
+						initializeDebrisParticles(6, tempX, tempY, tempRadius);
 						iterator.remove();
 						if (tempRadius > MIN_RADIUS) {
 							for (int i = 0; i < 4; i++) {
@@ -108,6 +111,7 @@ class Main {
 						}
 					}
 				}
+				drawDebrisFields();
 
 				// Projectile handling.
 				ListIterator<Projectile> projectileListIterator = ship.projectiles.listIterator();
@@ -137,6 +141,11 @@ class Main {
 				}
 				ship.outOfBorderCheck();
 				controller();
+
+				// UFO handling. //todo
+				if (score >= 0 && ufo == null) {
+					ufo = new UFO();
+				} else if (ufo != null) ufo.draw();
 
 				// Etc.
 				updateDeltaTime();
@@ -181,6 +190,25 @@ class Main {
 		glEnd();
 
 		glPopMatrix();
+	}
+
+	private void initializeDebrisParticles(int debrisAmount, float circleCentreX, float circleCentreY, int circleRadius) { //todo: asteroid's debris field that spawns upon destruction of an asteroid
+		debrisFields.add(new ArrayList<>());
+		int latest = debrisFields.size();
+		ArrayList<DebrisProjectile> debrisField = debrisFields.get(latest - 1);
+		for (int i = 0; i < debrisAmount; i++) {
+			debrisField.add(new DebrisProjectile(circleCentreX, circleCentreY, circleRadius));
+		}
+	}
+
+	private void drawDebrisFields() {
+		for (ArrayList<DebrisProjectile> debrisField : debrisFields) {
+			for (DebrisProjectile debris : debrisField) {
+				System.out.println("TEST");
+				debris.draw();
+			}
+			System.out.println("OVER");
+		}
 	}
 
 	private void initializeAsteroids() {
