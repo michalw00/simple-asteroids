@@ -56,8 +56,8 @@ public class Vector2 {
 
     public Vector2 div(float scalar) {
         Vector2 result = new Vector2();
-        result.X /= scalar;
-        result.Y /= scalar;
+        result.X = X / scalar;
+        result.Y = Y / scalar;
         return result;
     }
 
@@ -70,8 +70,8 @@ public class Vector2 {
 
     public Vector2 add(float scalar) {
         Vector2 result = new Vector2();
-        result.X += scalar;
-        result.Y += scalar;
+        result.X = X+scalar;
+        result.Y = Y+scalar;
         return result;
     }
 
@@ -84,8 +84,8 @@ public class Vector2 {
 
     public Vector2 sub(float scalar) {
         Vector2 result = new Vector2();
-        result.X -= scalar;
-        result.Y -= scalar;
+        result.X = X - scalar;
+        result.Y = Y - scalar;
         return result;
     }
 
