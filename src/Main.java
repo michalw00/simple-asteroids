@@ -144,7 +144,7 @@ class Main {
 
 				// UFO handling. //todo
 				if (score >= 0 && ufo == null) {
-					ufo = new UFO();
+					//ufo = new UFO();
 				} else if (ufo != null) ufo.draw();
 
 				// Etc.

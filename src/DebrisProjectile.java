@@ -9,7 +9,9 @@ public class DebrisProjectile extends Entity {
 		float[] coordinates = MathUtils.getRandomPointInCircle(circleCentreX, circleCentreY, circleRadius);
 		centreX = coordinates[0];
 		centreY = coordinates[1];
+
 		Time = 0.0f;
+
 		draw();
 	}
 
