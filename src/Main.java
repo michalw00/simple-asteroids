@@ -24,7 +24,7 @@ class Main {
 	public static final int PROJECTILE_SPEED = 450;
 	public static final int ASTEROID_INITIAL_AMOUNT = 6;
 	public static final float ASTEROID_SPAWN_DELAY = 0.2f;
-	public static final float PROJECTILE_SHOOT_DELAY = 0.5f;
+	public static final float PROJECTILE_SHOOT_DELAY = 0.4f; // 0.5f is default
 	public static int asteroidLowerLimit = 1, asteroidUpperLimit = 15;
 
 	public static Ship ship;
@@ -206,6 +206,7 @@ class Main {
 			for (DebrisProjectile debris : debrisField) {
 				System.out.println("TEST");
 				debris.draw();
+				debris.updateMovement();
 			}
 			System.out.println("OVER");
 		}

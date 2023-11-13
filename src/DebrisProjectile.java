@@ -3,16 +3,30 @@ import static org.lwjgl.opengl.GL11.glPopMatrix;
 
 public class DebrisProjectile extends Entity {
 	private float initialX, initialY;
-	private float Time;
+	private int speedModifier;
+	private double spawnAngle;
 
 	public DebrisProjectile(float circleCentreX, float circleCentreY, int circleRadius) {
 		float[] coordinates = MathUtils.getRandomPointInCircle(circleCentreX, circleCentreY, circleRadius);
+		spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
 		centreX = coordinates[0];
 		centreY = coordinates[1];
-
-		Time = 0.0f;
-
+		initializeSpeedModifier();
 		draw();
+	}
+
+	private void initializeSpeedModifier() {
+		speedModifier = Main.ASTEROID_SPEED * 5;
+	}
+
+	public void updateMovement() {
+		float directionX = (float) (Math.sin(spawnAngle));
+		float directionY = -(float) (Math.cos(spawnAngle));
+		directionY = -directionY;
+		directionX = -directionX;
+		float speedModifiedX = speedModifier * Main.deltaTime * directionX;
+		float speedModifiedY = speedModifier * Main.deltaTime * directionY;
+		move(speedModifiedX, speedModifiedY);
 	}
 
 	@Override
@@ -23,22 +37,19 @@ public class DebrisProjectile extends Entity {
 
 	@Override
 	void draw() {
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR);
-		Time += Main.deltaTime;
-		System.out.println(Time);
 		glPushMatrix();
 		glTranslatef(centreX, centreY, 0.0f);
-		glScalef(32.0f*(1.0f-Time),32.0f*(1.0f-Time),0.0f);
-		glTranslatef(-0.5f,-0.5f,0.0f);
+
+		glColor3f(1.0f, 1.0f, 1.0f);
 		glBegin(GL_QUADS);
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f - Time*1.4f);
-		glVertex2f(0.0f,0.0f);
-		glVertex2f(1.0f,0.0f);
-		glVertex2f(1.0f,1.0f);
-		glVertex2f(0.0f,1.0f);
+		glVertex2f(-1.0f, -1.0f);
+		glVertex2f(1.0f, -1.0f);
+		glVertex2f(1.0f, 1.0f);
+		glVertex2f(-1.0f, 1.0f);
 		glEnd();
-		glDisable(GL_BLEND);
+
 		glPopMatrix();
+
+
 	}
 }
