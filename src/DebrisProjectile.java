@@ -13,17 +13,13 @@ public class DebrisProjectile extends Entity {
 		spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
 		centreX = coordinates[0];
 		centreY = coordinates[1];
-		initializeSpeedModifier();
+		speedModifier = Main.ASTEROID_SPEED * 5;
 		draw();
 
 		float directionX = -((float) (Math.sin(spawnAngle)));
 		float directionY = -(-(float) (Math.cos(spawnAngle)));
 		Velocity.X = speedModifier * directionX;
 		Velocity.Y = speedModifier * directionY;
-	}
-
-	private void initializeSpeedModifier() {
-		speedModifier = Main.ASTEROID_SPEED * 5;
 	}
 
 	public void updateMovement() {
@@ -35,7 +31,7 @@ public class DebrisProjectile extends Entity {
 
 			Vector2 A = Vector2.V2(asteroid.centreX,asteroid.centreY);
 			Vector2 B = Vector2.V2(centreX,centreY);
-			Vector2 C= B.sub(A);
+			Vector2 C = B.sub(A);
 			float Distance = (float)Math.sqrt((double)C.dot());
 			if(Distance<asteroid.radius) {
 				Vector2 Normal = C.normalize();
