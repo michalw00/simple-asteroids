@@ -6,8 +6,8 @@ public class DebrisProjectile extends Entity {
 
 	public DebrisProjectile(float circleCentreX, float circleCentreY, int circleRadius) {
 		float[] coordinates = MathUtils.getRandomPointInCircle(circleCentreX, circleCentreY, circleRadius);
-		coordinates[0] = centreX;
-		coordinates[1] = centreY;
+		centreX = coordinates[0];
+		centreY = coordinates[1];
 		draw();
 	}
 
