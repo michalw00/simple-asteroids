@@ -4,13 +4,11 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glPopMatrix;
 
 public class DebrisProjectile extends Entity {
-	private float initialX, initialY;
-	private int speedModifier;
-	private double spawnAngle;
+	private final int speedModifier;
 	Vector2 Velocity = Vector2.V2(0.0f,0.0f);
 	public DebrisProjectile(float circleCentreX, float circleCentreY, int circleRadius) {
 		float[] coordinates = MathUtils.getRandomPointInCircle(circleCentreX, circleCentreY, circleRadius);
-		spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
+		double spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
 		centreX = coordinates[0];
 		centreY = coordinates[1];
 		speedModifier = Main.ASTEROID_SPEED * 2;

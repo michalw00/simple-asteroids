@@ -25,7 +25,8 @@ class Main {
 	public static final int ASTEROID_INITIAL_AMOUNT = 6;
 	public static final float ASTEROID_SPAWN_DELAY = 0.2f;
 	public static final float PROJECTILE_SHOOT_DELAY = 0.5f;
-	public static int asteroidLowerLimit = 1, asteroidUpperLimit = 15;
+	public static int asteroidLowerLimit = 2;
+	public static int asteroidUpperLimit = asteroidLowerLimit * 5;
 
 	public static Ship ship;
 	public static UFO ufo;
@@ -83,7 +84,6 @@ class Main {
 					if (asteroids.size() < asteroidUpperLimit) {
 						asteroids.add(new Asteroid(MathUtils.randomNumber(MIN_SEGMENTS, MAX_SEGMENTS),
 								MathUtils.randomNumber(MIN_RADIUS, MAX_RADIUS)));
-						asteroidLowerLimit++;
 					}
 					accumulatorAsteroidSpawn = 0;
 				}
@@ -144,9 +144,13 @@ class Main {
 				controller();
 
 				// UFO handling. //todo
-				if (score >= 0 && ufo == null) {
-					//ufo = new UFO();
-				} else if (ufo != null) ufo.draw();
+				if (score > 1000 && ufo == null) {
+					ufo = new UFO();
+				} else if (ufo != null) {
+					ufo.update();
+					ufo.outOfBorderCheck();
+					ufo.draw();
+				}
 
 				// Etc.
 				updateDeltaTime();
@@ -196,17 +200,18 @@ class Main {
 	private void initializeDebrisParticles(int debrisAmount, float circleCentreX, float circleCentreY, int circleRadius) {
 		debrisFields.add(new ArrayList<>());
 		int latest = debrisFields.size();
+
 		ArrayList<DebrisProjectile> debrisField = debrisFields.get(latest - 1);
 		for (int i = 0; i < debrisAmount; i++) {
 			debrisField.add(new DebrisProjectile(circleCentreX, circleCentreY, circleRadius));
 			accumulatorDebrisFieldsLifespan.add(0.0f);
 		}
+
 	}
 
 	private void drawDebrisFields() {
 		ListIterator<ArrayList<DebrisProjectile>> debrisFieldsIterator = debrisFields.listIterator();
 		ListIterator<Float> accumulatorTimersIterator = accumulatorDebrisFieldsLifespan.listIterator();
-
 		while (debrisFieldsIterator.hasNext()) {
 			debrisFieldsIterator.next();
 			float accumulatorTimer = accumulatorTimersIterator.next() + deltaTime;
@@ -234,11 +239,11 @@ class Main {
 	}
 
 	private void restartGameState() {
-		asteroidLowerLimit = 1;
-		asteroidUpperLimit = 15;
+		asteroidUpperLimit = asteroidLowerLimit * 5;
 
 		ship = new Ship();
 		debrisFields = new ArrayList<>();
+		ufo = null;
 		initializeAsteroids();
 		score = 0;
 		lives = 3;
