@@ -24,7 +24,7 @@ class Main {
 	public static final int PROJECTILE_SPEED = 450;
 	public static final int ASTEROID_INITIAL_AMOUNT = 6;
 	public static final float ASTEROID_SPAWN_DELAY = 0.2f;
-	public static final float PROJECTILE_SHOOT_DELAY = 0.4f; // 0.5f is default
+	public static final float PROJECTILE_SHOOT_DELAY = 0.5f;
 	public static int asteroidLowerLimit = 1, asteroidUpperLimit = 15;
 
 	public static Ship ship;
@@ -42,6 +42,7 @@ class Main {
 	private float accumulatorShootDelay = PROJECTILE_SHOOT_DELAY;
 	private float accumulatorSpawnProtection = 0.0f;
 	private float accumulatorSpawnProtectionInner = 0.0f;
+	private ArrayList<Float> accumulatorDebrisFieldsLifespan = new ArrayList<>();
 
 
 	Main() {
@@ -87,7 +88,7 @@ class Main {
 					accumulatorAsteroidSpawn = 0;
 				}
 
-				// Asteroid handling.
+				// Asteroid and debris projectile handling.
 				ListIterator<Asteroid> iterator = asteroids.listIterator();
 				while (iterator.hasNext()) {
 					Asteroid asteroid = iterator.next();
@@ -98,7 +99,7 @@ class Main {
 						float tempX = asteroid.centreX;
 						float tempY = asteroid.centreY;
 						int tempRadius = asteroid.radius;
-						initializeDebrisParticles(6, tempX, tempY, tempRadius);
+						initializeDebrisParticles(tempRadius/2, tempX, tempY, tempRadius);
 						iterator.remove();
 						if (tempRadius > MIN_RADIUS) {
 							for (int i = 0; i < 4; i++) {
@@ -192,23 +193,35 @@ class Main {
 		glPopMatrix();
 	}
 
-	private void initializeDebrisParticles(int debrisAmount, float circleCentreX, float circleCentreY, int circleRadius) { //todo: asteroid's debris field that spawns upon destruction of an asteroid
+	private void initializeDebrisParticles(int debrisAmount, float circleCentreX, float circleCentreY, int circleRadius) {
 		debrisFields.add(new ArrayList<>());
 		int latest = debrisFields.size();
 		ArrayList<DebrisProjectile> debrisField = debrisFields.get(latest - 1);
 		for (int i = 0; i < debrisAmount; i++) {
 			debrisField.add(new DebrisProjectile(circleCentreX, circleCentreY, circleRadius));
+			accumulatorDebrisFieldsLifespan.add(0.0f);
 		}
 	}
 
 	private void drawDebrisFields() {
+		ListIterator<ArrayList<DebrisProjectile>> debrisFieldsIterator = debrisFields.listIterator();
+		ListIterator<Float> accumulatorTimersIterator = accumulatorDebrisFieldsLifespan.listIterator();
+
+		while (debrisFieldsIterator.hasNext()) {
+			debrisFieldsIterator.next();
+			float accumulatorTimer = accumulatorTimersIterator.next() + deltaTime;
+			if (accumulatorTimer > 0.6f) {
+				debrisFieldsIterator.remove();
+				accumulatorTimersIterator.remove();
+			} else accumulatorTimersIterator.set(accumulatorTimer);
+		}
+
 		for (ArrayList<DebrisProjectile> debrisField : debrisFields) {
 			for (DebrisProjectile debris : debrisField) {
-				System.out.println("TEST");
-				debris.draw();
+				debris.outOfBorderCheck();
 				debris.updateMovement();
+				debris.draw();
 			}
-			System.out.println("OVER");
 		}
 	}
 
@@ -225,6 +238,7 @@ class Main {
 		asteroidUpperLimit = 15;
 
 		ship = new Ship();
+		debrisFields = new ArrayList<>();
 		initializeAsteroids();
 		score = 0;
 		lives = 3;
@@ -234,6 +248,7 @@ class Main {
 		accumulatorShootDelay = PROJECTILE_SHOOT_DELAY;
 		accumulatorSpawnProtection = 0.0f;
 		accumulatorSpawnProtectionInner = 0.0f;
+		accumulatorDebrisFieldsLifespan = new ArrayList<>();
 	}
 
 	private void controller() {

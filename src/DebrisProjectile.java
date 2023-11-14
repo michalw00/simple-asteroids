@@ -13,7 +13,7 @@ public class DebrisProjectile extends Entity {
 		spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
 		centreX = coordinates[0];
 		centreY = coordinates[1];
-		speedModifier = Main.ASTEROID_SPEED * 5;
+		speedModifier = Main.ASTEROID_SPEED * 2;
 		draw();
 
 		float directionX = -((float) (Math.sin(spawnAngle)));
@@ -33,10 +33,25 @@ public class DebrisProjectile extends Entity {
 			Vector2 B = Vector2.V2(centreX,centreY);
 			Vector2 C = B.sub(A);
 			float Distance = (float)Math.sqrt((double)C.dot());
-			if(Distance<asteroid.radius) {
+			if (Distance<asteroid.radius) {
 				Vector2 Normal = C.normalize();
 				Velocity = Normal.mul(speedModifier);
 			}
+		}
+	}
+
+	public void outOfBorderCheck() {
+		if (centreX < 0.05f * Main.WINDOW_WIDTH) {
+			centreX = 0.95f * Main.WINDOW_WIDTH;
+		}
+		if (centreX > 0.95f * Main.WINDOW_WIDTH) {
+			centreX = 0.05f * Main.WINDOW_WIDTH;
+		}
+		if (centreY < 0.05f * Main.WINDOW_HEIGHT) {
+			centreY = 0.95f * Main.WINDOW_HEIGHT;
+		}
+		if (centreY > 0.95f * Main.WINDOW_HEIGHT) {
+			centreY = 0.05f * Main.WINDOW_HEIGHT;
 		}
 	}
 
@@ -50,6 +65,7 @@ public class DebrisProjectile extends Entity {
 	void draw() {
 		glPushMatrix();
 		glTranslatef(centreX, centreY, 0.0f);
+		glScalef(0.8f, 0.8f, 1);
 
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glBegin(GL_QUADS);
