@@ -3,7 +3,7 @@ import java.util.Iterator;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class UFO extends Entity { //todo
+public class UFO extends Entity {
 	private static final int NUMBER_OF_SEGMENTS = 15;
 	private static final int RADIUS = 10;
 	private final float[][] vertexCoordinates;

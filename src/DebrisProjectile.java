@@ -5,7 +5,7 @@ import static org.lwjgl.opengl.GL11.glPopMatrix;
 
 public class DebrisProjectile extends Entity {
 	private final int speedModifier;
-	private float red, green, blue;
+	private final float red, green, blue;
 
 	Vector2 Velocity = Vector2.V2(0.0f,0.0f);
 	public DebrisProjectile(float circleCentreX, float circleCentreY, int circleRadius, float red, float green, float blue) {

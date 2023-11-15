@@ -162,9 +162,9 @@ class Main {
 				ship.outOfBorderCheck();
 				controller();
 
-				// UFO handling. //todo
+				// UFO handling.
 				accumulatorUfoSpawnDelay += deltaTime;
-				if (score >= 0 && ufo == null && accumulatorShootDelay >= UFO_SPAWN_DELAY) { // default: score > 1000
+				if (score >= 0 && ufo == null && accumulatorUfoSpawnDelay >= UFO_SPAWN_DELAY) { // default: score > 1000
 					ufo = new UFO();
 				} else if (ufo != null) {
 					accumulatorUfoShootDelay += deltaTime;
@@ -296,6 +296,9 @@ class Main {
 		accumulatorSpawnProtection = 0.0f;
 		accumulatorSpawnProtectionInner = 0.0f;
 		accumulatorDebrisFieldsLifespan = new ArrayList<>();
+		accumulatorUfoSpawnDelay = 0.0f;
+		accumulatorUfoShootDelay = 0.0f;
+		accumulatorUfoShootDelayInner = 0.0f;
 	}
 
 	private void controller() {

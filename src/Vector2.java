@@ -1,5 +1,3 @@
-import java.util.Vector;
-
 public class Vector2 {
     public float X = 0.0f, Y = 0.0f;
 

@@ -3,7 +3,7 @@ import static org.lwjgl.opengl.GL11.glColor3f;
 
 public class Projectile extends Entity {
 	private final float originRotation;
-	private float red, green, blue;
+	private final float red, green, blue;
 
 	public Projectile(Ship sourceShip) {
 		red = 1.0f;
