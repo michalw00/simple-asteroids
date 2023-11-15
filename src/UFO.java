@@ -62,7 +62,7 @@ public class UFO extends Entity {
 	}
 
 	public boolean ufoIsHit() {
-Iterator<Projectile> iterator = Main.ship.projectiles.iterator();
+		Iterator<Projectile> iterator = Main.ship.projectiles.iterator();
 		while (iterator.hasNext()) {
 			Projectile projectile = iterator.next();
 			int distance1 = MathUtils.calculateDistance((int)projectile.centreX, (int)projectile.centreY, (int)centreX, (int)centreY);

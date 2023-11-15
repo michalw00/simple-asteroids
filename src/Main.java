@@ -27,21 +27,21 @@ class Main {
 	public static final float ASTEROID_SPAWN_DELAY = 0.2f;
 	public static final float PROJECTILE_SHOOT_DELAY = 0.5f;
 	public static final float UFO_BURST_DELAY = 6.0f;
-	public static final float UFO_SPAWN_DELAY = 1.0f; // default : 15.0f
+	public static final float UFO_SPAWN_DELAY = 26.0f; // default : 15.0f
 	public static int asteroidLowerLimit = 2;
-	public static int asteroidUpperLimit = asteroidLowerLimit * 5;
+	public static int asteroidUpperLimit = asteroidLowerLimit * 8;
 	public static int ufoBurstCount = 0;
 
 	public static Ship ship;
 	public static UFO ufo;
 	public static ArrayList<Asteroid> asteroids;
 	public static ArrayList<ArrayList<DebrisProjectile>> debrisFields = new ArrayList<>();
-	public static int score = 0; // 10*asteroid.radius per asteroid, life lost penalty score -= 300, game over score = 0
+	public static int score = 0; // 10*asteroid.radius per asteroid, life lost penalty score -= 300, ufo shot score += 500, game over score = 0
 	public static int highScore = 0;
 	public static int lives = 3;
 	public static boolean spawnProtection = false;
 	public static boolean isPaused = true;
-	public static String menuText = "PRESS ENTER TO START";
+	private static String menuText = "PRESS ENTER TO START";
 
 	private float accumulatorAsteroidSpawn = 0.0f;
 	private float accumulatorShootDelay = PROJECTILE_SHOOT_DELAY;
@@ -164,8 +164,9 @@ class Main {
 
 				// UFO handling.
 				accumulatorUfoSpawnDelay += deltaTime;
-				if (score >= 0 && ufo == null && accumulatorUfoSpawnDelay >= UFO_SPAWN_DELAY) { // default: score > 1000
+				if (score >= 400 && ufo == null && accumulatorUfoSpawnDelay >= UFO_SPAWN_DELAY) {
 					ufo = new UFO();
+					accumulatorUfoSpawnDelay = 0.0f;
 				} else if (ufo != null) {
 					accumulatorUfoShootDelay += deltaTime;
 					accumulatorUfoShootDelayInner += deltaTime;
@@ -187,6 +188,7 @@ class Main {
 					ufo.draw();
 				}
 				if (ufo != null && ufo.ufoIsHit()) {
+					accumulatorUfoSpawnDelay = 0.0f;
 					float tempX = ufo.centreX;
 					float tempY = ufo.centreY;
 					initializeDebrisParticles(100, tempX, tempY, 20, 1.0f, 1.0f, 0.0f);
@@ -313,7 +315,7 @@ class Main {
 			ship.rotate(150f);
 		}
 		if (keyStateW == GLFW_PRESS) {
-			ship.updateAcceleration(6.0f, true);
+			ship.updateAcceleration(8.0f, true);
 		}
 		if (keyStateW == GLFW_RELEASE) {
 			ship.updateAcceleration(0, false);

@@ -68,8 +68,8 @@ public class Ship extends Entity {
 	public void respawn() {
 		Main.lives--;
 		Main.spawnProtection = true;
-		if (Main.score >= 300) {
-			Main.score -= 300;
+		if (Main.score >= 200) {
+			Main.score -= 200;
 		} else {
 			Main.score = 0;
 		}
