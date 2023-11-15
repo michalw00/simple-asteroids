@@ -5,10 +5,15 @@ import static org.lwjgl.opengl.GL11.glPopMatrix;
 
 public class DebrisProjectile extends Entity {
 	private final int speedModifier;
+	private float red, green, blue;
+
 	Vector2 Velocity = Vector2.V2(0.0f,0.0f);
-	public DebrisProjectile(float circleCentreX, float circleCentreY, int circleRadius) {
+	public DebrisProjectile(float circleCentreX, float circleCentreY, int circleRadius, float red, float green, float blue) {
 		float[] coordinates = MathUtils.getRandomPointInCircle(circleCentreX, circleCentreY, circleRadius);
 		double spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
 		centreX = coordinates[0];
 		centreY = coordinates[1];
 		speedModifier = Main.ASTEROID_SPEED * 2;
@@ -65,7 +70,7 @@ public class DebrisProjectile extends Entity {
 		glTranslatef(centreX, centreY, 0.0f);
 		glScalef(0.8f, 0.8f, 1);
 
-		glColor3f(1.0f, 1.0f, 1.0f);
+		glColor3f(red, green, blue);
 		glBegin(GL_QUADS);
 		glVertex2f(-1.0f, -1.0f);
 		glVertex2f(1.0f, -1.0f);

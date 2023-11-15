@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import static org.lwjgl.opengl.GL11.*;
 
 public class Ship extends Entity {
@@ -21,6 +23,19 @@ public class Ship extends Entity {
 
 	public void rotate(float angle) {
 		rotation += angle * Main.deltaTime;
+	}
+
+	public boolean ufoProjectileCollision() {
+		Iterator<Projectile> iterator = Main.ufo.projectiles.iterator();
+		while (iterator.hasNext()) {
+			Projectile projectile = iterator.next();
+			int distance1 = MathUtils.calculateDistance((int)projectile.centreX, (int)projectile.centreY, (int)centreX, (int)centreY);
+			if (distance1 < 10 + radius && !Main.spawnProtection) { // if projectile hits ship
+				iterator.remove();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void updateAcceleration(float increase, boolean playerIsAccelerating) {

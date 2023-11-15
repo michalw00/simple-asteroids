@@ -22,11 +22,15 @@ class Main {
 	public static final int MIN_SEGMENTS = 5, MAX_SEGMENTS = 9;
 	public static final int ASTEROID_SPAWN_RADIUS = 500, ASTEROID_SPEED = 100;
 	public static final int PROJECTILE_SPEED = 450;
+	public static final int UFO_BURST_COUNT_MAX = 6;
 	public static final int ASTEROID_INITIAL_AMOUNT = 6;
 	public static final float ASTEROID_SPAWN_DELAY = 0.2f;
 	public static final float PROJECTILE_SHOOT_DELAY = 0.5f;
+	public static final float UFO_BURST_DELAY = 6.0f;
+	public static final float UFO_SPAWN_DELAY = 1.0f; // default : 15.0f
 	public static int asteroidLowerLimit = 2;
 	public static int asteroidUpperLimit = asteroidLowerLimit * 5;
+	public static int ufoBurstCount = 0;
 
 	public static Ship ship;
 	public static UFO ufo;
@@ -41,6 +45,9 @@ class Main {
 
 	private float accumulatorAsteroidSpawn = 0.0f;
 	private float accumulatorShootDelay = PROJECTILE_SHOOT_DELAY;
+	private float accumulatorUfoShootDelay = 0.0f;
+	private float accumulatorUfoShootDelayInner = 0.0f;
+	private float accumulatorUfoSpawnDelay = 0.0f;
 	private float accumulatorSpawnProtection = 0.0f;
 	private float accumulatorSpawnProtectionInner = 0.0f;
 	private ArrayList<Float> accumulatorDebrisFieldsLifespan = new ArrayList<>();
@@ -99,7 +106,7 @@ class Main {
 						float tempX = asteroid.centreX;
 						float tempY = asteroid.centreY;
 						int tempRadius = asteroid.radius;
-						initializeDebrisParticles(tempRadius/2, tempX, tempY, tempRadius);
+						initializeDebrisParticles(tempRadius/2, tempX, tempY, tempRadius, 1.0f, 1.0f, 1.0f);
 						iterator.remove();
 						if (tempRadius > MIN_RADIUS) {
 							for (int i = 0; i < 4; i++) {
@@ -122,6 +129,15 @@ class Main {
 					if (projectile.outOfBorderCheck()) projectileListIterator.remove();
 					projectile.draw();
 				}
+				if (ufo != null) {
+					ListIterator<Projectile> ufoProjectileListIterator = ufo.projectiles.listIterator();
+					while (ufoProjectileListIterator.hasNext()) {
+						Projectile projectile = ufoProjectileListIterator.next();
+						projectile.calculateVelocity();
+						if (projectile.outOfBorderCheck()) ufoProjectileListIterator.remove();
+						projectile.draw();
+					}
+				}
 
 				// Ship handling.
 				if (!spawnProtection) {
@@ -140,16 +156,41 @@ class Main {
 						accumulatorSpawnProtectionInner = 0;
 					}
 				}
+				if (ufo != null && ship.ufoProjectileCollision()) {
+					ship.respawn();
+				}
 				ship.outOfBorderCheck();
 				controller();
 
 				// UFO handling. //todo
-				if (score > 1000 && ufo == null) {
+				accumulatorUfoSpawnDelay += deltaTime;
+				if (score >= 0 && ufo == null && accumulatorShootDelay >= UFO_SPAWN_DELAY) { // default: score > 1000
 					ufo = new UFO();
 				} else if (ufo != null) {
-					ufo.update();
+					accumulatorUfoShootDelay += deltaTime;
+					accumulatorUfoShootDelayInner += deltaTime;
+					ufo.updateMovement();
+					if (accumulatorUfoShootDelay >= 0.1f) {
+						if (ufoBurstCount < UFO_BURST_COUNT_MAX) {
+							ufo.projectiles.add(new Projectile(ufo, ufo.findTarget()));
+							ufoBurstCount++;
+						} else {
+							accumulatorUfoShootDelayInner += deltaTime;
+							if (accumulatorUfoShootDelayInner >= UFO_BURST_DELAY) {
+								accumulatorUfoShootDelayInner = 0.0f;
+								ufoBurstCount = 0;
+							}
+						}
+						accumulatorUfoShootDelay = 0.0f;
+					}
 					ufo.outOfBorderCheck();
 					ufo.draw();
+				}
+				if (ufo != null && ufo.ufoIsHit()) {
+					float tempX = ufo.centreX;
+					float tempY = ufo.centreY;
+					initializeDebrisParticles(100, tempX, tempY, 20, 1.0f, 1.0f, 0.0f);
+					ufo = null;
 				}
 
 				// Etc.
@@ -197,13 +238,13 @@ class Main {
 		glPopMatrix();
 	}
 
-	private void initializeDebrisParticles(int debrisAmount, float circleCentreX, float circleCentreY, int circleRadius) {
+	private void initializeDebrisParticles(int debrisAmount, float circleCentreX, float circleCentreY, int circleRadius, float red, float green, float blue) {
 		debrisFields.add(new ArrayList<>());
 		int latest = debrisFields.size();
 
 		ArrayList<DebrisProjectile> debrisField = debrisFields.get(latest - 1);
 		for (int i = 0; i < debrisAmount; i++) {
-			debrisField.add(new DebrisProjectile(circleCentreX, circleCentreY, circleRadius));
+			debrisField.add(new DebrisProjectile(circleCentreX, circleCentreY, circleRadius, red, green, blue));
 			accumulatorDebrisFieldsLifespan.add(0.0f);
 		}
 
@@ -244,6 +285,7 @@ class Main {
 		ship = new Ship();
 		debrisFields = new ArrayList<>();
 		ufo = null;
+		ufoBurstCount = 0;
 		initializeAsteroids();
 		score = 0;
 		lives = 3;

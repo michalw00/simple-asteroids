@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import static org.lwjgl.opengl.GL11.*;
 
 public class UFO extends Entity { //todo
@@ -5,11 +8,16 @@ public class UFO extends Entity { //todo
 	private static final int RADIUS = 10;
 	private final float[][] vertexCoordinates;
 	private final float[][] innerVertexCoordinates;
+	public int hitboxRadius = 10;
+	public ArrayList<Projectile> projectiles;
+	public float gunRotation;
 	private float velocity;
 
 	public UFO() {
+		projectiles = new ArrayList<>();
 		vertexCoordinates = new float[2][NUMBER_OF_SEGMENTS];
 		innerVertexCoordinates = new float[2][NUMBER_OF_SEGMENTS];
+		gunRotation = 0;
 
 		double spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
 		float initialX = (float) (Main.WINDOW_WIDTH / 2 + Main.ASTEROID_SPAWN_RADIUS * Math.cos(spawnAngle));
@@ -53,7 +61,30 @@ public class UFO extends Entity { //todo
 		}
 	}
 
-	public void update() {
+	public boolean ufoIsHit() {
+Iterator<Projectile> iterator = Main.ship.projectiles.iterator();
+		while (iterator.hasNext()) {
+			Projectile projectile = iterator.next();
+			int distance1 = MathUtils.calculateDistance((int)projectile.centreX, (int)projectile.centreY, (int)centreX, (int)centreY);
+			if (distance1 < 10 + hitboxRadius) { // if ship projectile hits UFO
+				Main.score += 500;
+				iterator.remove();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public float findTarget() {
+		float offsetDegrees = 80.0f;
+		float inaccuracy = (float) MathUtils.randomNumber(-10, 10);
+
+		float angle = (float) Math.atan2((int)Main.ship.centreY - (int)centreY, (int)Main.ship.centreX - (int)centreX);
+		float adjustedAngle = (float) (angle + Math.toRadians(offsetDegrees) + Math.toRadians(inaccuracy));
+		return (float) Math.toDegrees(adjustedAngle);
+	}
+
+	public void updateMovement() {
 		float acceleration = (float) Math.cos(System.currentTimeMillis() * 0.0005);
 		velocity = velocity + 100.0f;
 		velocity = (float) Math.cos(velocity) * velocity * acceleration * Main.deltaTime;
@@ -63,7 +94,7 @@ public class UFO extends Entity { //todo
 	@Override
 	void move(float moveX, float moveY) {
 		centreX += moveX;
-		centreY += moveY;
+		centreY -= moveY;
 	}
 
 	@Override
