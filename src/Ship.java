@@ -29,7 +29,8 @@ public class Ship extends Entity {
 		Iterator<Projectile> iterator = Main.ufo.projectiles.iterator();
 		while (iterator.hasNext()) {
 			Projectile projectile = iterator.next();
-			int distance1 = MathUtils.calculateDistance((int)projectile.centreX, (int)projectile.centreY, (int)centreX, (int)centreY);
+			int distance1 =
+					MathUtils.calculateDistance((int)projectile.centreX, (int)projectile.centreY, (int)centreX, (int)centreY);
 			if (distance1 < 10 + radius && !Main.spawnProtection) { // if projectile hits ship
 				iterator.remove();
 				return true;

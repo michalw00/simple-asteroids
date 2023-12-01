@@ -65,7 +65,8 @@ public class Asteroid extends Entity {
 	}
 
 	public boolean collision() {
-		int distance = MathUtils.calculateDistance((int)Main.ship.centreX, (int)Main.ship.centreY, (int)centreX, (int)centreY);
+		int distance =
+				MathUtils.calculateDistance((int)Main.ship.centreX, (int)Main.ship.centreY, (int)centreX, (int)centreY);
 		if (distance < Main.ship.radius + (radius - 10) && !Main.spawnProtection) { // if ship collides with asteroid
 			Main.ship.respawn();
 		}
@@ -73,7 +74,8 @@ public class Asteroid extends Entity {
 		Iterator<Projectile> iterator = Main.ship.projectiles.iterator();
 		while (iterator.hasNext()) {
 			Projectile projectile = iterator.next();
-			int distance1 = MathUtils.calculateDistance((int)projectile.centreX, (int)projectile.centreY, (int)centreX, (int)centreY);
+			int distance1 =
+					MathUtils.calculateDistance((int)projectile.centreX, (int)projectile.centreY, (int)centreX, (int)centreY);
 			if (distance1 < 1 + radius) { // if projectile hits asteroid
 				Main.score += 1000 / radius;
 				iterator.remove();

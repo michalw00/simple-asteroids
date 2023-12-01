@@ -36,7 +36,8 @@ class Main {
 	public static UFO ufo;
 	public static ArrayList<Asteroid> asteroids;
 	public static ArrayList<ArrayList<DebrisProjectile>> debrisFields = new ArrayList<>();
-	public static int score = 0; // 10*asteroid.radius per asteroid, life lost penalty score -= 300, ufo shot score += 500, game over score = 0
+	public static int score = 0;
+	// 10*asteroid.radius per asteroid, life lost penalty score -= 300, ufo shot score += 500, game over score = 0
 	public static int highScore = 0;
 	public static int lives = 3;
 	public static boolean spawnProtection = false;
@@ -240,7 +241,8 @@ class Main {
 		glPopMatrix();
 	}
 
-	private void initializeDebrisParticles(int debrisAmount, float circleCentreX, float circleCentreY, int circleRadius, float red, float green, float blue) {
+	private void initializeDebrisParticles(int debrisAmount, float circleCentreX, float circleCentreY, int circleRadius,
+	                                       float red, float green, float blue) {
 		debrisFields.add(new ArrayList<>());
 		int latest = debrisFields.size();
 

@@ -8,7 +8,8 @@ public class DebrisProjectile extends Entity {
 	private final float red, green, blue;
 
 	Vector2 Velocity = Vector2.V2(0.0f,0.0f);
-	public DebrisProjectile(float circleCentreX, float circleCentreY, int circleRadius, float red, float green, float blue) {
+	public DebrisProjectile(float circleCentreX, float circleCentreY, int circleRadius,
+	                        float red, float green, float blue) {
 		float[] coordinates = MathUtils.getRandomPointInCircle(circleCentreX, circleCentreY, circleRadius);
 		double spawnAngle = Math.toRadians(MathUtils.randomNumber(1, 360));
 		this.red = red;
