@@ -2,4 +2,5 @@
 
 ![](asteroids.png)
 
-[Desktop 2023.11.14 - 14.46.03.02.DVR.webm](https://github.com/michalw00/simple-asteroids/assets/150129586/c7183734-43ac-4d7a-9aeb-65419aeed023)
+
+[Asteroids-footage.webm](https://github.com/michalw00/simple-asteroids/assets/150129586/42b44f02-5b77-4752-99fc-28b76b1f02b2)
